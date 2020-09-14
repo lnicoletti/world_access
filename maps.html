@@ -1,0 +1,849 @@
+<meta charset="utf-8">
+<html>
+    <head>
+        <style>
+    /* #yAxis {
+        display:none;
+    } */
+
+   #xAxis, #yAxis path{
+        stroke: grey;
+        display:none
+    }
+
+    #xAxis, #yAxis text {
+            stroke: none;
+            fill: black;
+            font-size: 10px;
+        }
+
+    #yAxis line {
+          display:None
+        }
+
+    #xAxis line {
+          display:None
+    }
+
+    #kdexAxis path, #xAxis path {
+        display:None
+    }
+
+    #kdeyAxis {
+        display: None
+    }
+
+    .osm-attribution-container {
+        bottom: -10;
+        right: 760;
+        position: absolute;
+        display: block;
+        margin: 0 10 5;
+        font-size:12px;
+    }
+
+    body {
+    /* margin: 0; */
+    /* overflow:hidden; */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color:rgb(211, 217, 218);
+    }
+
+    h1 {/* text-align: left; */
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        /* font-size: x-large; */
+        font-weight: bold;
+        }
+
+    h5 {
+        color: grey;
+        font-weight: bolder;
+        font-size:14px
+    }
+
+    .mainview {
+        display: flex;
+    }
+
+    /* select, input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; 
+    background-color: rgb(224, 230, 231); 
+    font-weight: bold; 
+    } */
+
+    #dropdown {
+        width: 200px;
+        height: 30px;
+        background: rgb(211, 217, 218);
+        border-width: 1.2px;
+        border-color: grey;
+        font-weight:bolder;
+        font-size:18px;
+        text-indent: 52px;
+    }
+
+    #city {
+        width: 200px;
+        height: 30px;
+        background: rgb(211, 217, 218);
+        border-width: 1.2px;
+        border-color: grey;
+        font-weight:bolder;
+        font-size:18px;
+        vertical-align: middle;
+    }
+
+    #dropdown.selected, #dropdown:hover {
+        background:purple;
+        color: #fff;
+    }   
+
+        </style>
+    </head>
+
+<body>
+<!-- Create a div where the graph will take place -->
+    <!-- dropdown -->
+    <h1 style = "text-align: left"> Access to Urban Services Around the World 
+    </h1>
+    <!-- <p>
+        <h4>Choose or search for a city below</h4>
+        <select id="dropdown"></select>
+        <input id="city"></input>
+    </p> -->
+    <p></p>
+    <!-- <div id = "tooltip">
+        <h5><span id = "scores">&nbsp;</span></h5>
+    </div> -->
+    <h5>CHOOSE OR SELECT A CITY</h5>
+    <select id="dropdown"></select>
+    <!-- <input id="city"></input> -->
+    <p></p>
+        <div class="mainView">
+            <div>
+                <svg id="charts" height="600" width="750" transform="translate(0,0)"></svg>
+            </div>
+            <div>
+                <svg id="summary" height="600" width="600" transform="translate(0,20)"></svg>
+            </div>
+        </div>
+        <div class="osm-attribution-container">
+            <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
+        </div>
+
+    <!-- <svg id="container" height="620" width="1200">
+        <g id="charts" transform="translate(0,0)"></g>
+        <g id="summary" transform="translate(850,20)"></g>
+    </svg>
+    <div class="osm-attribution-container">
+        <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
+    </div> -->
+
+<!-- <svg id="charts" width="400" height="300"></svg> -->
+
+        
+</body>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3-tile.v0.0.min.js"></script>
+<!-- <script type="module">import legend from 'd3-legend'</script> -->
+<!-- <script src="d3.min.js"></script> -->
+<script>
+    // define options of dropdown menu
+    var dropdown_options = [{value:'Chicago', text: 'Chicago'}, {value:'New York City',text:'New York City'}, {value:'Seattle',text: 'Seattle'}, {value:'Toronto',text: 'Toronto'}, {value:'Vancouver',text: 'Vancouver'},
+       {value:'Montreal',text: 'Montreal'}, {value:'Ottawa',text: 'Ottawa'}, {value:'Edmonton',text: 'Edmonton'}, {value:'Calgary',text: 'Calgary'}, {value:'Paris',text: 'Paris'}, {value:'Singapore',text: 'Singapore'},
+       {value:'Mexico City',text:'Mexico City'}, {value:'London',text:'London'}, {value:'Melbourne',text:'Melbourne'}, {value:'Sydney',text:'Sydney'}, {value:'Shanghai',text:'Shanghai'},
+       {value:'Beijing',text:'Beijing'}, {value:'Madrid',text:'Madrid'}, {value:'Milan',text:'Milan'}, {value:'Bangkok',text:'Bangkok'}, {value:'Seoul',text:'Seoul'}, {value:'Rome',text:'Rome'}, {value:'Taipei',text:'Taipei'},
+       {value:'Barcelona',text:'Barcelona'}, {value:'Amsterdam',text:'Amsterdam'}, {value:'Buenos Aires',text:'Buenos Aires'}, {value:'Santiago',text:'Santiago'}, {value:'Istanbul',text: 'Istanbul'},
+       {value:'Tokyo',text:'Tokyo'}, {value:'Rio de Janeiro',text:'Rio de Janeiro'}, {value:'Cape Town',text:'Cape Town'}, {value:'Berlin',text:'Berlin'}, {value:'Nairobi',text:'Nairobi'},
+       {value:'Moscow',text:'Moscow'}, {value:'Bogota',text:'Bogota'}, {value:'Manila',text:'Manila'}, {value:'Copenhagen',text:'Copenhagen'}, {value:'Athens',text:'Athens'}, {value:'Budapest',text:'Budapest'},
+       {value:'Jakarta',text:'Jakarta'}, {value:'Auckland',text:'Auckland'}, {value:'Dublin',text:'Dublin'}, {value:'Warsaw',text:'Warsaw'}, {value:'Edinburgh',text:'Edinburgh'},
+       {value:'Stockholm',text:'Stockholm'}, {value:'Zurich',text:'Zurich'}, {value:'Lisbon',text:'Lisbon'}, {value:'Ho Chi Minh',text:'Ho Chi Minh'}, {value:'Lima',text:'Lima'}]
+
+</script>
+<!-- <script src="https://unpkg.com/d3-scale-cluster@1.3.1/dist/d3-scale-cluster.min.js"></script> -->
+<!-- <script src="https://unpkg.com/d3-svg-legend@1.13.0/d3-legend.min.js"></script> -->
+<script>
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 55, left: 50},
+        width = 800 - margin.left - margin.right,
+        height = 650 - margin.top - margin.bottom;
+    
+    
+    // populate drop-down
+    d3.select("#dropdown")
+          .selectAll("option")
+          .data(dropdown_options)
+          .enter()
+          .append("option")
+          .attr("value", function(option) { return option.value; })
+          .text(function(option) { return option.text; });
+
+    // initial dataset on load
+    var selected_dataset = "Chicago";
+
+    // load the data
+    // d3.json("cities_final.geojson").then(showData)
+
+    // var promises = d3.json("cities_final.json")
+    // Promise(promises).then(showData)
+    // async function getData() {
+    //     data = await d3.json("cities_final.json")
+    //     return data}
+    // d3.json("cities_final.json").then(showData)
+    const data = d3.json("data/cities_final.json")
+    // console.log(data)
+    data.then(showData)
+
+    function showData(data) {
+    /////MAP PLOT
+
+        // filter data for city display
+        cities = data.features.filter(function(d){return d.properties.city == selected_dataset });
+        // prepare data for kde
+        access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
+      
+        console.log(data)
+        
+        // Create feature collection for projection
+        featureCollection = {type:"FeatureCollection", cities}
+        // rename keys
+        featureCollection['features'] = featureCollection['cities'];
+        delete featureCollection['cities'];
+        
+        // console.log(featureCollection)
+        // console.log(cities.map(d=>d.properties.accessibil_sc))
+
+        // define quantile colorscale
+        let cScale = d3.scaleSequentialQuantile([...cities.map(d=>d.properties.accessibil_sc)], d3.interpolateInferno)
+
+        // set projection               
+        // let projection = d3.geoAlbers() d3.geoMercator()
+        let projection = d3.geoMercator()
+                            .fitSize([width, height], featureCollection)
+                        //    .scale(7000)
+                        //    .translate([width+1900, height+1500])
+
+        // add zooming functionality
+        const zoom = d3.zoom()
+                        .scaleExtent([1, 8])
+                        .on('zoom', zoomed);
+
+        // const g = svg.append('g');
+
+        // create the tiles for background map
+        var pi = Math.PI,
+        tau = 2 * pi;
+        let tiles = d3.tile()
+                .size([width, height])
+                .scale(projection.scale() * tau)
+                .translate(projection([0, 0]))
+                ();
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#charts")
+                .append("svg")
+
+        // draw the legend for map
+        
+        // // create the background map
+        let image = svg.selectAll("image")
+            .data(tiles)
+            .enter().append("image")
+            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            // .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/dark_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            // .attr("xlink:href", function(d){ return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            // .attr("xlink:href", function(d){ return "https://tiles.stadiamaps.com/tiles/alidade_smooth/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            .attr("x", function(d) { return (d[0] + tiles.translate[0]) * tiles.scale; })
+            .attr("y", function(d) { return (d[1] + tiles.translate[1]) * tiles.scale; })
+            .attr("width", tiles.scale)
+            .attr("height", tiles.scale)
+            .attr("transform", "translate(" + (0) + "," + (30) + ")")
+            .attr("id", "map")
+
+        // plot the map
+        let path = d3.geoPath()
+                     .projection(projection)
+        
+        plot = svg.selectAll("path")
+                    .data(cities)
+                    .enter().append("path")
+                    .attr("id", "map")
+                    .attr("class", "hex")
+                    .attr("d", d => path(d))
+                    // .attr("stroke", "white")
+                    // .attr("stroke-width", "0.05px")
+                    // .attr("fill", "black")
+                    .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
+                    // .call(updateFill, selected_dataset)
+                    .attr("opacity", "0.9")
+                    .attr("transform", "translate(" + (0) + "," + (30) + ")")
+                    .on("mouseover.tip", function() { d3.select(this).attr("stroke", "red").raise();})
+                    .on("mouseout.tip", function() { d3.select(this).attr("stroke", null).raise();})
+                    .on("mouseover.opall", function() { d3.selectAll(".hex").attr("opacity", "0.2");})
+                    .on("mouseover.opt", function() { d3.select(this).attr("opacity", "0.9");})
+                    .on("mouseout.opall", function() { d3.selectAll("path").attr("opacity", "0.9");})
+                    .on("mouseover.bar", function(d) { displayData(d); })
+                    .on("mouseout.bar", hideData);
+
+////////// KDE PLOT
+        // create the kde distribution and plot it
+        var dist = d3.select("#summary")
+                    .append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                        .attr("id", "histogram")
+                        .attr("transform",
+                        "translate(" + margin.left*2 + "," + 360 + ")")
+
+        // add the x Axis
+        maxAccess = d3.max(access)
+        var x = d3.scaleLinear()
+                    .domain([0, maxAccess])
+                    .range([0, width/1.5]);
+
+        dist.append("g")
+            .attr("transform", "translate(0," + height/4 + ")")
+            .call(d3.axisBottom(x).tickSize(0).ticks(5))
+            .attr("id", "kdexAxis")
+            .style("font-weight", "bold")
+            .style("fill", "grey")
+        
+        // add the y Axis
+        var y = d3.scaleLinear()
+                    .range([height/4, 0])
+                    .domain([0, 7]);
+        dist.append("g")
+            .call(d3.axisLeft(y))
+            .attr("id", "kdeyAxis"); 
+        
+        // Compute kernel density estimation
+        var kde = kernelDensityEstimator(kernelEpanechnikov(0.007), x.ticks(90))
+        var density =  kde(access)
+        console.log(density)
+
+        // build the histogram
+        thresholds = x.ticks(130)
+        // console.log(thresholds)
+        bins = d3.histogram()
+                .domain(x.domain())
+                .thresholds(thresholds)
+                (access)
+        // console.log(bins)
+
+        yBins = d3.scaleLinear()
+                .domain([0, d3.max(bins, d => d.length) / density.length])
+                .range([height/4, 0])
+
+        // draw the histogram
+        hist = dist.append("g")
+            // .attr("class", "kdeBins")
+            // .attr("fill", "none")
+            .attr("fill", "grey")
+            // .attr("stroke", "darkgrey")
+            .selectAll("rect")
+            .data(bins)
+            .join("rect")
+            .attr("x", d => x(d.x0) + 1)
+            // .attr("y", d => yBins(d.length / density.length))
+            // .attr("width", d => x(d.x1) - x(d.x0)-1.5)
+            .attr("width", d => 3.2)
+            // .attr("height", 0)
+            // .attr("y", d=>yBins(0))
+            // .transition()
+            // .duration(3000)
+            .attr("y", d => yBins(d.length / density.length))
+            .attr("height", d => yBins(0) - yBins(d.length / density.length));
+
+        // draw the kde distribution line
+        line = dist.append("path")
+            // .attr("class", "kdePath")
+            .datum(density)
+            .attr("fill", "#ff6d00")
+            .attr("fill-opacity", ".07")
+            .attr("stroke", "#ff6d00")
+            .attr("stroke-width", 2)
+            .attr("stroke-linejoin", "round")
+                .attr("d",  d3.line()
+                .curve(d3.curveBasis)
+                .x(function(d) { return x(d[0]); })
+                .y(function(d) { return y(d[1]); })
+          );
+
+        // add city name label
+        distLabel = dist.append("text")
+            .attr("x", (0))
+            .attr("y", 0) // -85 previously
+            .style("text-anchor", "left")
+            // .style("font-size", "12px")
+            .style("font", "25px Georgia")
+            .attr("fill", "#ff6d00")
+            // .attr("fill", function (d) { return myColor(d.values[0].party); })
+                .text(selected_dataset);	
+        
+        // // add median line
+        // dist.selectAll(".grid-line")
+        //     .append("line")
+        //     .attr("x1", x(d3.median(cities, d => +d.properties.accessibil_sc)))
+        //     .attr("y1", 0)
+        //     .attr("x2", x(d3.median(cities, d => +d.properties.accessibil_sc)))
+        //     .attr("y2", 7)
+        //     .attr("stroke", "black")
+        //     .attr("stroke-width", 2)
+
+            // console.log(y(d3.median(density, d => +d[0])))
+        console.log(yBins(d3.median(cities, d => +d.properties.accessibil_sc).length / density.length))
+        // add median accessibility text
+        distText = dist.append("text")
+            .attr("x", x(d3.median(cities, d => +d.properties.accessibil_sc))-20)
+            .attr("y", -45) // -85 previously
+            // .attr("y", yBins(d3.median(cities, d => +d.properties.accessibil_sc) / density.length))
+            .style("text-anchor", "middle")
+            // .style("font-size", "12px")
+            .style("font", "14px Arial")
+            // .attr("fill", function (d) { return myColor(d.values[0].party); })
+            // .html("Median Accessibility: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
+            .html("The median street in <b>" + selected_dataset + "</b> has an accessibility of: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
+            // .attr("font-weight", "light")
+            // .text("The median street in ")
+            // .append("tspan")
+            // .attr("font-weight", "bold")
+            // .text(selected_dataset)
+            // .append("tspan")
+            // .attr("font-weight", 300)
+            // .text(" has an accessibility of: ")
+            // .append("tspan")
+            // .attr("font-weight", "bold")
+            // .text(d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
+            .call(wrap, 150)
+
+            // wrap(distText, 150)
+
+  ////// UPDATE            
+    // update kde/hist plot when city changes
+    function update(selectedGroup) {
+        // Create new data with the selection
+        var cities = data.features.filter(function(d){return d.properties.city == selectedGroup });
+        access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
+        var density =  kde(access)
+        // Create new feature collection for projection
+        featureCollection = {type:"FeatureCollection", cities}
+        // rename keys
+        featureCollection['features'] = featureCollection['cities'];
+        delete featureCollection['cities'];
+        // define new quantile colorscale
+        let cScale = d3.scaleSequentialQuantile([...cities.map(d=>d.properties.accessibil_sc)], d3.interpolateInferno)
+
+        // set new projection               
+        let projection = d3.geoMercator()
+                            .fitSize([width, height], featureCollection)
+        
+        tiles = d3.tile()
+                .size([width, height])
+                .scale(projection.scale() * tau)
+                .translate(projection([0, 0]))
+                ();
+
+        // new bins for histogram
+        bins = d3.histogram()
+                .domain(x.domain())
+                .thresholds(thresholds)
+                (access)
+        yBins = d3.scaleLinear()
+                .domain([0, d3.max(bins, d => d.length) / density.length])
+                .range([height/4, 0])
+
+        // Give these new data to update line and histogram
+        line
+            .datum(density)
+            .transition()
+            .duration(1000)
+            .attr("fill", "#ff6d00")
+            .attr("fill-opacity", ".07")
+            .attr("stroke", "#ff6d00")
+            .attr("stroke-width", 2)
+            .attr("stroke-linejoin", "round")
+                .attr("d",  d3.line()
+                .curve(d3.curveBasis)
+                .x(function(d) { return x(d[0]); })
+                .y(function(d) { return y(d[1]); }));
+
+        hist
+            .data(bins)
+            .transition()
+            .duration(1000)
+            .attr("x", d => x(d.x0) + 1)
+            .attr("width", d => 3.2)
+            .attr("y", d => yBins(d.length / density.length))
+            .attr("height", d => yBins(0) - yBins(d.length / density.length));
+
+        // Update Label
+        // add city name label
+        distLabel
+        // .data(selectedGroup)
+        //     .transition()
+        //     .duration(1000)
+            .attr("x", (0))
+            .attr("y", 0) // -85 previously
+            .style("text-anchor", "left")
+            // .style("font-size", "12px")
+            .style("font", "25px Georgia")
+            .attr("fill", "#ff6d00")
+            // .attr("fill", function (d) { return myColor(d.values[0].party); })
+                .text(selectedGroup);
+
+
+        // Update text
+        distText
+        .data(cities)
+            // .transition()
+            // .duration(1000)
+            .attr("x", x(d3.median(cities, d => +d.properties.accessibil_sc))-20)
+            .attr("y", -45) // -85 previously
+            .style("text-anchor", "middle")
+            // .style("font-size", "12px")
+            .style("font", "14px Arial")
+            .text("The median street in " + selectedGroup + " has an accessibility of: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
+            .call(wrap, 150)
+            
+        // Update map
+        let path = d3.geoPath()
+                     .projection(projection)
+        
+        d3.selectAll("#map")
+                .remove("#map")
+
+        image = svg.selectAll("image")
+        // image
+            .data(tiles)
+            // .transition()
+            // .duration(1000)
+            .enter().append("image")
+            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            .attr("x", function(d) { return (d[0] + tiles.translate[0]) * tiles.scale; })
+            .attr("y", function(d) { return (d[1] + tiles.translate[1]) * tiles.scale; })
+            .attr("width", tiles.scale)
+            .attr("height", tiles.scale)
+            .attr("transform", "translate(" + (0) + "," + (30) + ")")
+            .attr("id", "map")
+
+        plot = svg.selectAll("path")
+        // plot
+            .data(cities)
+            // .transition()
+            // .duration(200)
+            .enter().append("path")
+            .attr("id", "map")
+            .attr("class", "hex")
+            .attr("d", d => path(d))
+            .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
+            .attr("opacity", "0.9")
+            .attr("transform", "translate(" + (0) + "," + (30) + ")")
+            .on("mouseover.tip", function() { d3.select(this).attr("stroke", "red").raise();})
+            .on("mouseout.tip", function() { d3.select(this).attr("stroke", null).raise();})
+            .on("mouseover.opall", function() { d3.selectAll(".hex").attr("opacity", "0.2");})
+            .on("mouseover.opt", function() { d3.select(this).attr("opacity", "0.9");})
+            .on("mouseout.opall", function() { d3.selectAll("path").attr("opacity", "0.9");})
+            .on("mouseover.bar", function(d) { displayData(d); })
+            .on("mouseout.bar", hideData);
+
+        // u = svg.selectAll("path")
+        //     .data(cities)
+        // u
+        // // plot
+        //     // .data(cities)
+        //     .enter().append("path")
+        //     .merge(u) // get the already existing elements as well
+        //     .transition() // and apply changes to all of them
+        //     .duration(800)
+        //     .attr("id", "map")
+        //     .attr("class", "hex")
+        //     .attr("d", d => path(d))
+        //     .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
+        //     .attr("opacity", "0.9")
+        //     .attr("transform", "translate(" + (0) + "," + (30) + ")")
+        //     .on("mouseover.tip", function() { d3.select(this).attr("stroke", "red").raise();})
+        //     .on("mouseout.tip", function() { d3.select(this).attr("stroke", null).raise();})
+        //     .on("mouseover.opall", function() { d3.selectAll(".hex").attr("opacity", "0.2");})
+        //     .on("mouseover.opt", function() { d3.select(this).attr("opacity", "0.9");})
+        //     .on("mouseout.opall", function() { d3.selectAll("path").attr("opacity", "0.9");})
+        //     .on("mouseover.bar", function(d) { displayData(d); })
+        //     .on("mouseout.bar", hideData);
+        // u
+        //     .exit()
+        //     .remove()
+
+        }
+
+        d3.select("#dropdown").on("change", function(d) {
+        // recover the option that has been chosen
+        var selectedOption = d3.select(this).property("value")
+        // run the updateChart function with this selected option
+        update(selectedOption)
+    })
+    
+        svg.call(zoom);
+        image.call(zoom)
+    };
+
+    function zoomed() {
+         // the "zoom" event populates d3.event with an object that has
+        // a "translate" property (a 2-element Array in the form [x, y])
+        // and a numeric "scale" property
+        var e = d3.event.transform,
+
+        // now, constrain the x and y components of the translation by the
+        // dimensions of the viewport
+        tx = Math.min(0, Math.max(e.x, width - width * e.k)),
+        ty = Math.min(0, Math.max(e.y, height - height * e.k));
+        
+        d3
+        .selectAll('#map') // To prevent stroke width from scaling
+        .attr("transform", [
+          "translate(" + [tx, ty] + ")",
+          "scale(" + e.k + ")"
+        ].join(" "));
+
+    }
+
+    // // dropdown dataset selection
+    // var dropDown = d3.select("#dropdown");
+
+    // dropDown.on("change", function() {
+
+    //     checked = true;
+
+    //     selected_dataset = d3.event.target.value;
+
+    //     console.log(selected_dataset)
+
+    //     d3.selectAll("path")
+    //             .remove("path")
+
+    //     d3.select("#histogram")
+    //             .remove("#histogram")
+
+    //     d3.selectAll("image")
+    //             .remove("image")
+        
+    //     // d3.selectAll(".osm-attribution-container")
+    //     //         .remove(".osm-attribution-container")
+                
+    //     // d3.json("cities_final.json").then(showData)
+    //     data.then(showData)
+    //     // plot.call(updateFill, selected_dataset)
+    // });
+
+    var search = d3.select("#city").on("keypress", function() {
+        if(d3.event.keyCode === 13) {
+            selected_dataset = d3.event.target.value;
+        
+        console.log(selected_dataset)
+
+        d3.selectAll("path")
+                .remove("path")
+
+        d3.select("#histogram")
+                .remove("#histogram")
+
+        d3.selectAll("image")
+                .remove("image")
+        
+        data.then(showData)}
+    
+    });
+        
+            // console.log(document.getElementById("#city").value)
+
+    function displayData(d) {
+
+        d3.selectAll("#barchart")
+        .remove("#barchart")
+        // d3.select("#scores")
+        // .append("html")
+        // .html("Mobility Score: " + Math.round(+d.properties.mobility_r*100) + "%<br>")
+        // .append("html")
+        // .html("Active Living Score: " + Math.round(+d.properties.active_liv_r *100) + "%<br>")
+        // .append("html")
+        // .html("Entertainment Score: " + Math.round(+d.properties.nightlife_r*100) + "%<br>")
+        // .append("html")
+        // .html("Health and Wellbeing Score: " + Math.round(+d.properties.health_wel_r*100) + "%<br>")
+        // .append("html")
+        // .html("Food Choices Score: " + Math.round(+d.properties.food_choic_r*100) + "%<br>")
+        // .append("html")
+        // .html("Community Space Score: " + Math.round(+d.properties.community_r*100) + "%<br>")
+        // .append("html")
+        // .html("Education Score: " + Math.round(+d.properties.education_r*100) + "%<br>")
+
+        // set the dimensions and margins of the graph
+        var margin = {top: 5, right: 65, bottom: 25, left: 150},
+            width = 390 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#summary")
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("id", "barchart")
+            .attr("transform",
+                "translate(" + margin.left*1.2 + "," + margin.top + ")");
+
+        // Parse the Data
+
+        radarData = [{category: "Mobility Score",
+                 value: Math.round(+d.properties.mobility_r*100)},
+                 {category: "Active Living Score",
+                 value: Math.round(+d.properties.active_liv_r *100)},
+                 {category: "Entertainment Score",
+                 value: Math.round(+d.properties.nightlife_r*100)},
+                 {category: "Health and Wellbeing Score",
+                 value: Math.round(+d.properties.health_wel_r*100)},
+                 {category: "Food Choices Score",
+                 value: Math.round(+d.properties.food_choic_r*100)},
+                 {category: "Community Space Score",
+                 value: Math.round(+d.properties.community_r*100)},
+                 {category: "Education Score",
+                 value: Math.round(+d.properties.education_r*100)}]
+
+        // let cScale = d3.scaleSequentialQuantile([...radarData.map(d=>d.value)], d3.interpolateInferno)
+        // Add X axis
+        var x = d3.scaleLinear()
+            .domain([0, 100])
+            .range([ 0, width]);
+        // svg.append("g")
+        //     .attr("transform", "translate(0," + height + ")")
+        //     .attr("id", "xAxis")
+        //     .call(d3.axisBottom(x))
+        //     .selectAll("text")
+        //     .attr("transform", "translate(-10,0)rotate(-45)")
+        //     .style("text-anchor", "end")
+        //     .attr("font-size", "9px") 
+        //     .attr("font-weight", "bold")
+
+        // console.log(d3.max((radarData.map(d=>d.value))))
+        // Y axis
+        var y = d3.scaleBand()
+            .range([ 0, height ])
+            .domain(radarData.map(function(d) { return d.category; }))
+            .padding(.1);
+        svg.append("g")
+            .attr("id", "yAxis")
+            .call(d3.axisLeft(y))
+            // .attr("font-size", "20px") 
+            .attr("font-weight", "bold")
+
+        //Bars
+        svg.selectAll("myRect")
+            .data(radarData)
+            .enter()
+            .append("rect")
+            .attr("x", x(0))
+            .attr("y", function(d) { return y(d.category); })
+            .attr("width", function(d) { return x(+d.value); })
+            .attr("height", y.bandwidth()-5)
+            // .attr("fill", "#ff6d00")
+            .attr("fill", "none")
+            .attr("stroke", "grey")
+            .attr("stroke-width", "1.2px")
+            .append("text")
+            .text(function(d) { return x(+d.value);})
+
+        //data labels
+        svg.selectAll("text.lab").data(radarData)
+            .enter().append("text")
+            .attr('fill','black')
+            .attr("text-anchor", "right")
+            .attr("x", function(d) { return x(+d.value) + 5; })
+            .attr("y", function(d) { return y(d.category)+20; })
+            .html(function(d) {return (+d.value) + "%"})
+            .attr("font-size", "10px") 
+            .attr("font-weight", "bold") 
+
+        // console.log(x.range()[1])
+    }
+
+    function hideData() {
+
+        // d3.select("#scores")
+        // .text("\u00A0");
+
+        d3.selectAll("#barchart")
+        .remove("#barchart")
+
+        // yAxis = d3.selectAll("#yAxis")
+        // yAxis.selectAll("path")
+        //     .remove("path")
+        // yAxis.selectAll("text")
+        //     .remove("text")
+
+
+        // xAxis = d3.selectAll("#xAxis")
+        // xAxis.selectAll("path")
+        //     .remove("path")
+        // xAxis.selectAll("text")
+        //     .remove("text")
+
+        // d3.select("#scores")
+        // .selectAll("path")
+        // .remove("path");
+
+        // d3.select("#datum")
+        // .text("\u00A0");
+    }
+
+    // Function to compute density
+    function kernelDensityEstimator(kernel, X) {
+      return function(V) {
+        return X.map(function(x) {
+          return [x, d3.mean(V, function(v) { return kernel(x - v); })];
+        });
+      };
+    }
+    function kernelEpanechnikov(k) {
+      return function(v) {
+        return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+      };
+    }
+
+    // function to wrap text
+    function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0, //parseFloat(text.attr("dy")),
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                            .text(word);
+            }
+        }
+     });
+    }
+    
+    </script>
+        
+</html>

@@ -1,0 +1,180 @@
+<meta charset="utf-8">
+<html>
+    <head>
+        <style>
+    #yAxis {
+        display:none;
+    }
+
+    #xAxis path{
+        stroke: lightgrey;
+    }
+
+    #xAxis text {
+            stroke: none;
+            fill: black;
+            font-size: 9px;
+        }
+
+    #xAxis line {
+          display:None
+        }
+
+        </style>
+    </head>
+
+<body>
+<!-- Create a div where the graph will take place -->
+    <div id="charts"></div>
+</body>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 55, left: 50},
+        width = 300 - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
+    
+    // get the data
+    d3.json("cities_final.geojson").then(function (data) {
+      
+      // Filter city of interest
+      var cities = d3.nest()
+          .key(function(d) { return d.properties.city; })
+          .entries(data.features);
+    
+    //   data = data.features.filter(function(d){return d.properties.city == "Montreal" });
+    //   // Select data for kde
+    // //   access = data.features.map(function(d){ return +d.properties.accessibil_sc; }) 
+    //   access = data.map(function(d){ return +d.properties.accessibil_sc; }) 
+      
+      console.log(cities)
+    //   console.log(data)
+    //   console.log(access)
+    //   console.log(d3.min(access))
+    //   console.log(d3.max(access))
+
+        // append the svg object to the body of the page
+    var svg = d3.select("#charts").selectAll("svg")
+    .data(cities)
+        .enter().append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+    
+      // add the x Axis
+      // maxAccess = d3.max(access)
+      // create colorscale
+        // let maxAccess = d3.max(mapInfo.features, d => d.properties.population)
+        // let medianPop = d3.median(mapInfo.features, d => d.properties.population)
+
+        let cScale = d3.scaleQuantize([1, 10], d3.interpolateInferno)
+        // set projection               
+        let projection = d3.geoAlbers()
+                        //    .scale(180)
+                           .translate([width/2, height/2])
+
+        let path = d3.geoPath()
+                     .projection(projection)
+
+    geo = cities.map(function(d) {return {
+        key: d.key,
+        accessibil_sc: d.values.map(d=>d.properties.accessibil_sc),
+        geometry: d.values.map(d=>d.geometry)}})
+        // geometry: d.map(d=>d.values.geometry)}})
+    
+    console.log(geo)
+    svg.selectAll("path")
+        .data(geo)
+        .enter().append("path")
+        .attr("d", d => path(d))
+        .attr("stroke", "black")
+        .attr("stroke-width", "0.4px")
+        // .attr("fill", d => cScale(d.accessibil_sc))
+
+      // Compute kernel density estimation
+    //   var kde = kernelDensityEstimator(kernelEpanechnikov(0.007), x.ticks(30))
+    //   var density =  kde(data.features.map(function(d){ return +d.properties.accessibil_sc; }))
+    //   var density = cities.map(function(d){ return kde(+d.values.properties); })
+    //   var test = cities.filter(function(d){ return +d.values.properties.accessibil_sc; })
+    //   test = cities.map(function(d) {return {
+    //   key: d.key,
+    //   values: d.values[100].properties.accessibil_sc}})
+
+    // density = cities.map(function(d) {return {
+    //     key: d.key,
+    //     accessibil_sc: d.values.map(d=>d.properties.accessibil_sc),
+    //     accessibil_median: d3.median(d.values.map(d=>d.properties.accessibil_sc)),
+    //     values: kde(d.values.map(d=>d.properties.accessibil_sc))}})
+    
+    // //  x values
+    //   x_vals = density.map(function(d) { return d.values.map(d => d[0]); })
+    //   x_coord = x_vals.map(d => d.map(d => x(d)))
+    // // y values
+    //   y_vals = density.map(function(d) { return d.values.map(d => d[1]); })
+    //   y_coord = y_vals.map(d => d.map(d => y(d)))
+    //   console.log(density)
+    //   console.log(x_vals)
+    //   console.log(y_vals)
+    //   console.log(x_coord)
+    //   console.log(y_coord)
+
+    //   density = {
+    //         0: x_coord,
+    //         1: y_coord}
+
+    //   console.log(density)
+    //   // Plot the area
+    //   svg.append("path")
+    //       .attr("class", "mypath")
+    //     //   .datum(density)
+    //     .data(density)
+    //       .attr("fill", "white")
+    //       .attr("opacity", ".8")
+    //       .attr("stroke", "#ff6d00")
+    //       .attr("stroke-width", 2)
+    //       .attr("stroke-linejoin", "round")
+    //       .attr("d", function(d) {return line(d.values); })
+
+    // Add Labels
+     svg.append("text")
+        .attr("x", (0))
+        .attr("y", height + 30) // -85 previously
+        .style("text-anchor", "left")
+        // .style("font-size", "12px")
+        .style("font", "18px Georgia")
+        .attr("fill", "#ff6d00")
+        // .attr("fill", function (d) { return myColor(d.values[0].party); })
+            .text(function(d) { return d.key; });	
+
+    //  svg.append("text")
+    //     .attr("x", (0))
+    //     .attr("y", height + 45) // -85 previously
+    //     .style("text-anchor", "left")
+    //     // .style("font-size", "12px")
+    //     .style("font", "10px Arial")
+    //     // .attr("fill", function (d) { return myColor(d.values[0].party); })
+    //     .text("Accessibility Score: ")
+
+            // .text("Accessibility Score: " + d3.median(density, d => +d.accessibil_sc));
+        
+    });
+    
+    // // Function to compute density
+    // function kernelDensityEstimator(kernel, X) {
+    //   return function(V) {
+    //     return X.map(function(x) {
+    //       return [x, d3.mean(V, function(v) { return kernel(x - v); })];
+    //     });
+    //   };
+    // }
+    // function kernelEpanechnikov(k) {
+    //   return function(v) {
+    //     return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+    //   };
+    // }
+    </script>
+        
+</html>
