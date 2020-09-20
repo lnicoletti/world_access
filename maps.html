@@ -65,6 +65,10 @@
         display: flex;
     }
 
+    svg {
+            border: 1px solid black;
+    }
+
     /* select, input {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -126,7 +130,7 @@
                 <svg id="charts" height="600" width="750" transform="translate(0,0)"></svg>
             </div>
             <div>
-                <svg id="summary" height="600" width="600" transform="translate(0,20)"></svg>
+                <svg id="summary" height="600" width="600" transform="translate(0,0)"></svg>
             </div>
         </div>
         <div class="osm-attribution-container">
@@ -168,8 +172,8 @@
 <script>
     // set the dimensions and margins of the graph
     var margin = {top: 30, right: 30, bottom: 55, left: 50},
-        width = 800 - margin.left - margin.right,
-        height = 650 - margin.top - margin.bottom;
+        width = 800 - margin.left - margin.right, // 830
+        height = 650 - margin.top - margin.bottom; // 685
     
     
     // populate drop-down
@@ -194,6 +198,7 @@
     //     return data}
     // d3.json("cities_final.json").then(showData)
     const data = d3.json("data/cities_final.json")
+    // const data = d3.json("https://drive.google.com/file/d/18EMAzEuuMV623brB6N6t1ZX6Mxv7vKH0/view?usp=sharing")
     // console.log(data)
     data.then(showData)
 
@@ -205,7 +210,7 @@
         // prepare data for kde
         access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
       
-        console.log(data)
+        console.log(cities)
         
         // Create feature collection for projection
         featureCollection = {type:"FeatureCollection", cities}
@@ -213,7 +218,7 @@
         featureCollection['features'] = featureCollection['cities'];
         delete featureCollection['cities'];
         
-        // console.log(featureCollection)
+        console.log(featureCollection)
         // console.log(cities.map(d=>d.properties.accessibil_sc))
 
         // define quantile colorscale
@@ -405,8 +410,8 @@
             // .style("font-size", "12px")
             .style("font", "14px Arial")
             // .attr("fill", function (d) { return myColor(d.values[0].party); })
-            // .html("Median Accessibility: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
-            .html("The median street in <b>" + selected_dataset + "</b> has an accessibility of: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
+            // .git shtml("Median Accessibility: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
+            .html("The median street in " + selected_dataset + " has an accessibility of: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
             // .attr("font-weight", "light")
             // .text("The median street in ")
             // .append("tspan")

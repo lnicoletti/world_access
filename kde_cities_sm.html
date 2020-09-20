@@ -36,7 +36,7 @@
         height = 300 - margin.top - margin.bottom;
     
     // get the data
-    d3.json("cities_final.geojson").then(function (data) {
+    d3.json("data/cities_final.geojson").then(function (data) {
       
       // Filter city of interest
       var cities = d3.nest()
@@ -163,23 +163,21 @@
         .attr("id", "maps")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top/4 + ")")
-        .append("circle")
-            .attr("fill", "")
-            .attr("stroke", "lightgrey")
-            .attr("r", height/2)
-            .attr("cx", width/2)
-            .attr("cy", height/2)
+        // .append("circle")
+        //     .attr("fill", "")
+        //     .attr("stroke", "lightgrey")
+        //     .attr("r", height/2)
+        //     .attr("cx", width/2)
+        //     .attr("cy", height/2)
     
     // Create feature collection for use with the projection
+    // featureCollection = cities.map(function(d) {return {
+    //     key: d.key,
+    //     features: d.values}})
 
+    // // featureCollection = {type:"FeatureCollection", featureCollection}
     
-    featureCollection = cities.map(function(d) {return {
-        key: d.key,
-        features: d.values}})
-
-    // featureCollection = {type:"FeatureCollection", featureCollection}
-    
-    console.log(featureCollection)
+    // console.log(featureCollection)
 
     // console.log(cities.map(function(d) {return d.values.map(d=>d.properties.accessibil_sc)}))
     // console.log(cities.map(function(d) {return d.values}))
@@ -190,31 +188,81 @@
     // console.log(cScale)
     
     // for (const city of featureCollection) {
+    mapData = cities.map(function(d) {return d.values})
+    // console.log(cities.map(d=>d.values.map(d=>path(d))))
+    console.log(mapData)
+    // featureCollections = []
+    // for (const city of mapData) {
+    //   // console.log(city)
+    //   // Create feature collection for projection
+    //   featureCollection = {type:"FeatureCollection", city}
+    //     // rename keys
+    //   featureCollection['features'] = featureCollection['city'];
+    //   delete featureCollection['city'];
 
-    let projection = d3.geoAlbers()
+    //   featureCollections.push(featureCollection)
+      
+
+    //   let projection = d3.geoMercator()
+    //                       .fitSize([width, height], featureCollection)
+      
+    //   // let cScale = d3.scaleSequentialQuantile([...city.map(d=>d.properties.accessibil_sc)], d3.interpolateInferno)
+
+    //   let path = d3.geoPath()
+    //               .projection(projection)
+      
+    //   maps.append("path")
+    //   .data(city)
+    //   // .data(cities.values)
+    //   // .enter().append("path")
+    //   .attr("d", d=>path(d))
+    //   // .attr("d", d=>d.map(d=>path(d)))
+    //   .attr("stroke", "black")
+    //   // .attr("stroke-width", "0.05px")
+    //   .attr("fill", "white")
+    //   .exit().remove("path")
+      
+    // }
+    // console.log(featureCollections)
+
+    let projection = d3.geoMercator()
+                        // .scale(200)
+                      // .center([49.2827, 123.1207]) 
+                        // .fitSize([width, height], featureCollections[0])
                         // .fitSize([width, height/1.15], featureCollection)
                         // .fitSize([width, height/1.15], city)
-
                         // .fitSize([width, height/1.15], 
                         // featureCollection.map(d=>d.features))
 
-
     let path = d3.geoPath()
                   .projection(projection)
+                  // .scale(19000) // value I would like to which when the region changes
     // }
     // console.log(cities.map(function(d) {return d.values}))
 
     // console.log(cities.map(function(d) {return d.values.map(d=>d.properties)}))
-    console.log(cities.map(d=>d.values.map(d=>path(d))))
+    // console.log(featureCollection.map(d=>path(d.features.geometry)))
 
     // PICK UP HERE
-    maps.selectAll("path")
-      .data(cities.map(function(d) {return d.values}))
+    // maps.selectAll("path")
+    //   .data(cities.map(function(d) {return d.values}))
+    //   // .data(cities.values)
+    //   .enter().append("path")
+    //   // .attr("d", d=>path(d))
+    //   .attr("d", d=>d.map(d=>path(d)))
+    //   .attr("stroke", "black")
+    //   // .attr("stroke-width", "0.05px")
+    //   .attr("fill", "white")
+    //   // .attr("fill", d => cScale(+d.properties.accessibil_sc))
+    //   // .attr("fill", d => cScale(d =>+d.properties.accessibil_sc))
+
+    maps.append("path")
+      .data(mapData)
       // .data(cities.values)
-      .enter().append("path")
+      // .enter().append("path")
       // .attr("d", d=>path(d))
       .attr("d", d=>d.map(d=>path(d)))
-      .attr("stroke", "white")
+      .attr("stroke", "black")
       // .attr("stroke-width", "0.05px")
       .attr("fill", "white")
       // .attr("fill", d => cScale(+d.properties.accessibil_sc))
