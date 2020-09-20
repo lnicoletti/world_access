@@ -28,7 +28,7 @@
         margin-bottom: 20;
     }
 
-    p {
+    .description {
       max-width: 520px;
       text-align: justify;
       text-anchor: middle;
@@ -55,7 +55,7 @@
       <span style="color: #FAAD6A">least accessible.
   </h4>
   <div class="subtitle">
-  <p>Statistical distribution of accessibility for cities around the world. 
+  <p class="description">Statistical distribution of accessibility for cities around the world. 
     Each curve represents the probability distribution of accessibility scores for the blocks within a given city.
     Cities associated with flatter curves have a more <b>unequal</b> distribution of accessibility.</p>
   </div>
@@ -164,6 +164,7 @@
           .attr("stroke-width", 2)
           .attr("stroke-linejoin", "round")
           .attr("d", function(d) {return line(d.values); })
+          
 
     // Add Labels
      svg.append("text")
@@ -180,7 +181,7 @@
             .text(function(d) { return d.key; });	
 
      svg.append("text")
-     .data(density)
+      .data(density)
         // .data(density.sort(function(a,b) { return +a.accessibil_median - +b.accessibil_median }))
         .attr("x", (0))
         .attr("y", height + 45) // -85 previously
@@ -192,6 +193,33 @@
         .append("tspan")
         .attr("font-weight", "bold")
         .text(d=>Math.round(+d.accessibil_median*100)/100);
+
+      // median line
+      svg.append("line")
+        .data(density)
+        .attr("x1", d=>x(+d.accessibil_median))
+        .attr("x2", d=>x(+d.accessibil_median))
+        .attr("y1", 50)
+        .attr("y2", 126)
+        // .attr("d", function(d) {return line((+d.accessibil_median, +d.accessibil_median)); })
+        .attr("stroke", "grey")
+        .style("stroke-dasharray", ("3, 3"))
+        .style("opacity", "0.5")
+        .attr("stroke-width", "0.5px")
+
+      // median label
+      var medText = d3.select("#charts").select("svg")
+          .data(density)
+          // .attr("class", "description")
+          .append("text")
+          .text("Median accessibility")
+          .attr("x", d=>x(+d.accessibil_median))
+          .attr("y", 68)
+          .style("font-family", "arial")
+          .style("font-size", "10")
+          .attr("text-anchor", "middle")
+          .attr("fill", "rgb(167, 167, 167)")
+      
     // console.log(d3.max(density, d=>+d.accessibil_sc))
 
     // access = cities.map(function(d) {return {
