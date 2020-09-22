@@ -26,7 +26,7 @@
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
     // get the data
-    d3.json("cities_final.geojson").then(function (data) {
+    d3.json("data/cities_final.geojson").then(function (data) {
       
       // Filter city of interest
       data = data.features.filter(function(d){return d.properties.city == "Montreal" });
