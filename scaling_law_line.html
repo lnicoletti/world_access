@@ -5,38 +5,82 @@
         <meta charset="utf-8">
         <title>D3 Page Template</title>
         <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://d3js.org/d3-scale-chromatic.v1.js"></script>
         <style>
-            .line {
-                fill: none;
-                stroke: #EF5285;
-                stroke-width: 2px;
-                }
+          .xAxis path, .yAxis path{
+              stroke: lightgrey;
+          }
+
+          .xAxis text, .yAxis text {
+                  stroke: none;
+                  fill: black;
+                  font-size: 9px;
+              }
+
+          .xAxis line, .yAxis line {
+                display:None
+              }
+
+          #curves {
+            fill-opacity: 0;
+          }
+
+          h1 {
+              /* text-align: left; */
+              font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+              font-size: x-large;
+              font-style: bold;
+              margin-bottom: 20;
+              text-align: center;
+          }
+
+          h4 {
+              /* text-align: left; */
+              font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+              /* font-size: x-large; */
+              font-style: bold;
+              /* margin-bottom: 20; */
+              text-align: center;
+          }
+          body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+          }
+
+          #tooltip {
+            border: solid 1px black;
+            padding: 5px;
+            /* change the tooltip so that its position can be moved around */
+            position: absolute;
+            /* hide it for when theres no hovering */
+            display: none;
+            background-color: white;
+        }
+
         </style>
     </head>
   
   <body>
     <div id="graph"></div>
+    <div id="tooltip">Tooltip</div>
   </body>
 
 <script>
 
 // Set the margins
-var margin = {top: 60, right: 100, bottom: 20, left: 80},
+var margin = {top: 60, right: 100, bottom: 50, left: 80},
   width = 850 - margin.left - margin.right,
-  height = 370 - margin.top - margin.bottom;
-
-// Parse the month variable
-var parseMonth = d3.timeParse("%b");
-var formatMonth = d3.timeFormat("%b");
+  height = 500 - margin.top - margin.bottom;
 
 // Set the ranges
-var x = d3.scaleTime().domain([parseMonth("Jan"),parseMonth("Dec")]).range([0, width]);
+var x = d3.scaleLinear().range([0, width]);
 var y = d3.scaleLinear().range([height, 0]);
 
 // Define the line
 var valueLine = d3.line()
-    .x(function(d) { return x(d.Month); })
-    .y(function(d) { return y(+d.Sales); })
+    .y(function(d) { return y(+d.model); })
+    .x(function(d) { return x(+d.rank_a_log); })
+    // .domain([0, 1]);
+
 
 // Create the svg canvas in the "graph" div
 var svg = d3.select("#graph")
@@ -49,47 +93,72 @@ var svg = d3.select("#graph")
         .attr("transform","translate(" + margin.left + "," + margin.top + ")")
         .attr("class", "svg");
 
+// create the tooltip function
+function showTooltip(text, coords) {
+  // console.log(coords)
+d3.select("#tooltip").text(text)
+    .style("display", "block")
+    .style("top", coords[1] + 10)
+    .style("left", coords[0] + 10)
+        
+    }
+
 // Import the CSV data
-d3.json("data/cities_final_cont.json", function(error, data) {
+d3.csv("data/cities_final_scaling.csv", function(error, data) {
   if (error) throw error;
-  
-   // Format the data
-//   data.forEach(function(d) {
-//       d.Month = parseMonth(d.Month);
-//       d.Sales = +d.Sales;
-//       d.Fruit = d.Fruit;
-//   });
+  console.log(data)
+  //  Format the data
+  data.forEach(function(d) {
+      // d.Month = parseMonth(d.Month);
+      d.rank_a_log = +d.rank_a_log;
+      d.accessibil_sc = +d.accessibil_sc
+      // d.Fruit = d.Fruit;
+    });
+
+// Filter out Toronto and Ottawa for now
+// cities = data.filter(function(d){ return  (d.city !== "Ottawa" || d.city !== "Toronto") })
+cities = data.filter(function(d){ return d.city !== "Toronto" })
+cities = cities.filter(function(d){ return  d.city !== "Ottawa" })
+// cities = data.filter(function(d){ return  (d.city === "Barcelona") || (d.city === "Vancouver") || (d.city === "Tokyo")})
 
 var nest = d3.nest()
-          .key(function(d) { return d.properties.city; })
-          .entries(data.features);
+          .key(function(d) { return d.city; })
+          .entries(cities);
     
       console.log(nest)
 
-  // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d.Month; }));
-  y.domain([0, d3.max(data, function(d) { return d.Sales; })]);
+// nest = nest.map(function(d) {return {
+//   key: d.key,
+//   accessibil_sc: d.values.map(d=>d.accessibil_sc),
+//   rank_a_log: d.values.map(d=>d.rank_a_log),
+//   // values: nest.map(function(d) {return {
+//   //   // accessibil_sc: d.values.map(d=>d.accessibil_sc),
+//   //   // rank_a_log: d.values.map(d=>d.rank_a_log),
+//   //   accessibil_median: d3.median(d.values.map(d=>d.accessibil_sc))
+//   //   }}),
+//   accessibil_median: d3.median(d.values.map(d=>d.accessibil_sc))}})
   
+//   console.log(nest)
+  // Scale the range of the data
+  y.domain([0, d3.max(data, function(d) { return d.accessibil_sc; })]);
+  x.domain([0, d3.max(data, function(d) { return d.rank_a_log; })]);
+  
+  console.log(d3.max(data, function(d) { return d.accessibil_sc; }))
   // Set up the x axis
   var xaxis = svg.append("g")
        .attr("transform", "translate(0," + height + ")")
-       .attr("class", "x axis")
-       .call(d3.axisBottom(x)
-          .ticks(d3.timeMonth)
-          .tickSize(0, 0)
-          .tickFormat(d3.timeFormat("%B"))
-          .tickSizeInner(0)
-          .tickPadding(10));
+       .attr("class", "xAxis")
+       .call(d3.axisBottom(x));
 
   // Add the Y Axis
    var yaxis = svg.append("g")
-       .attr("class", "y axis")
-       .call(d3.axisLeft(y)
-          .ticks(5)
-          .tickSizeInner(0)
-          .tickPadding(6)
-          .tickSize(0, 0));
+       .attr("class", "yAxis")
+       .call(d3.axisLeft(y));
 
+    // var cScale = d3.scaleOrdinal(d3.schemeCategory10)
+    //                 // .domain(nest.map(d => d.key))
+    cScale = d3.scaleSequential(d3.interpolateOranges)
+                  .domain([0.4, 1.1]);
  // yaxis.select(".domain").style("display","none")
   
   // Add a label to the y axis
@@ -99,17 +168,78 @@ var nest = d3.nest()
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Monthly Sales")
+        .text("Accessibility Score")
         .attr("class", "y axis label");
-  
+
+  // Add a label to the y axis  
+  svg.append("text")
+        .attr("y", height+30)
+        .attr("x", width/2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .html("log(rank)")
+        .attr("class", "x axis label");
+
   // Draw the line
+  // svg.selectAll(".line")
+  //     .data(nest)
+  //     .enter()
+  //     .append("path")
+	//       .attr("class", "line")
+	//       .attr("d", function(d){
+	//       	return valueLine(d.values)})
+  //       .style("stroke", d=>cScale(d.key))
+
+  // svg.selectAll(".line")
+  //     .data(cities)
+  //     .enter()
+  //     .append("path")
+	//       .attr("class", "line")
+	//       .attr("d", function(d){
+	//       	return valueLine(d.values)})
+  //       .style("stroke", "black")
+
+  svg
+      // First we need to enter in a group
+      .selectAll("myDots")
+      .data(nest)
+      .enter()
+        .append('g')
+        // .style("fill", d=>cScale(d.key))
+      // Second we need to enter in the 'values' part of this group
+      .selectAll("myPoints")
+      .data(function(d){ return d.values })
+      .enter()
+      .append("circle")
+      // .style("fill", d=>cScale(d.Continent))
+      .style("fill", d=>cScale(0.85))
+      .attr("opacity", "0.7")
+      .attr("cy", d=>y(d.accessibil_sc))
+        .attr("cx", d=>x(d.rank_a_log))
+        .attr("r", 1)
+        // .attr("stroke", "white")
+        // create hovering feature
+        .on("mouseenter", d => {
+            // show text and get x and y positon of mouse
+            showTooltip(d.city, [d3.event.clientX, d3.event.clientY])
+        })
+        .on("mousemove", d => {
+            // do the same thing on mousemove so that it follows the mouse
+            showTooltip(d.city, [d3.event.clientX, d3.event.clientY])
+        })
+        .on("mouseleave", d => {
+            d3.select("#tooltip").style("display", "none")
+        })
+
   svg.selectAll(".line")
       .data(nest)
       .enter()
       .append("path")
 	      .attr("class", "line")
 	      .attr("d", function(d){
-	      	return valueLine(d.values)});
+	      	return valueLine(d.values)})
+        .style("stroke", d=>cScale(1.1))
+        .attr("stroke-width", 2)
   
 })
 </script>

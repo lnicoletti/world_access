@@ -188,23 +188,57 @@
     // initial dataset on load
     var selected_dataset = "Chicago";
 
-    // load the data
-    // d3.json("cities_final.geojson").then(showData)
+    // let store = {}
 
-    // var promises = d3.json("cities_final.json")
-    // Promise(promises).then(showData)
-    // async function getData() {
-    //     data = await d3.json("cities_final.json")
-    //     return data}
-    // d3.json("cities_final.json").then(showData)
-    const data = d3.json("data/cities_final.json")
+    // function loadData() {
+    // return Promise.all([
+    //     d3.json("data/cities_final.json"),
+    // ]).then(datasets => {
+    //     store.data = datasets[0];
+    //     // store.geoJSON = datasets[1]
+    //     return store;
+    // })
+    // }
+    // loadData()
+    // showData(store.data)
+    // console.log(store)
+
+    // projection = d3.geoMercator()
+    //         .center([-73.9375, 40.7324])
+    //         .scale((550000) / (2 * Math.PI))
+    //         .translate([width / 2, height / 2])
+
+
+    // tile = d3.tile()
+    //         .size([width, height])
+    //         .scale(projection.scale() * 2 * Math.PI)
+    //         .translate(projection([0, 0]))
+
+    // tiles = Promise.all(tile().map(async d => {
+    //         d.data = await d3.json(`https://tile.nextzen.org/tilezen/vector/v1/256/all/${d[2]}/${d[0]}/${d[1]}.json?api_key=uwiMd7FoT82lNUvwToNksg`); // Sign up for an API key: https://www.nextzen.org
+    //         return d;
+    // }))
+
+    // console.log(tiles)
+
+    d3.json("data/cities_final.json").then((data) => {
+        console.log(data)    
+        showData(data)
+        // showData(data,tiles)
+
+
+    })
+
+    // const data = d3.json("data/cities_final.json")
     // const data = d3.json("https://drive.google.com/file/d/18EMAzEuuMV623brB6N6t1ZX6Mxv7vKH0/view?usp=sharing")
     // console.log(data)
-    data.then(showData)
+    // data.then(showData)
 
+    // function showData(data, tiles) {
     function showData(data) {
-    /////MAP PLOT
 
+    /////MAP PLOT
+        console.log(data)
         // filter data for city display
         cities = data.features.filter(function(d){return d.properties.city == selected_dataset });
         // prepare data for kde
@@ -253,7 +287,7 @@
 
         // draw the legend for map
         
-        // // create the background map
+        // create the background map
         let image = svg.selectAll("image")
             .data(tiles)
             .enter().append("image")
@@ -271,6 +305,17 @@
         // plot the map
         let path = d3.geoPath()
                      .projection(projection)
+
+    // const roads = svg.selectAll(".tile")
+    //   .data(tiles)
+    // .enter().append("path")
+    //   .style("fill", "none")
+    //   .attr("d", (d) => { return path(d.data.roads) })
+    //   .style("stroke-width", .1)
+    //   .style("stroke-opacity", .5)
+    //   .style("stroke", "000");
+        
+        // console.log(tiles)
         
         plot = svg.selectAll("path")
                     .data(cities)

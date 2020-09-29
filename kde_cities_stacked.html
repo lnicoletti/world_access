@@ -1,0 +1,429 @@
+<meta charset="utf-8">
+<html>
+    <head>
+        <style>
+    #yAxis {
+        display:none;
+    }
+
+    #xAxis path{
+        stroke: lightgrey;
+    }
+
+    #xAxis text {
+            stroke: none;
+            fill: black;
+            font-size: 9px;
+        }
+
+    #xAxis line {
+          display:None
+        }
+
+    #curves {
+      fill-opacity: 0;
+      /* fill:white;
+      stroke: black */
+    }
+
+    h1 {
+        /* text-align: left; */
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        font-size: x-large;
+        font-style: bold;
+        margin-bottom: 20;
+        text-align: center;
+    }
+
+    h4 {
+        /* text-align: left; */
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        /* font-size: x-large; */
+        font-style: bold;
+        /* margin-bottom: 20; */
+        text-align: center;
+    }
+
+    .description {
+      max-width: 520px;
+      text-align: justify;
+      text-anchor: middle;
+      color: rgb(167, 167, 167);
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: small;
+    }
+
+    .subtitle {
+      margin-top: 0;
+      margin-bottom: 10;
+      display: flex;
+      justify-content: center;
+    }
+
+    .buttons {
+      justify-content: center;
+      display: flex;
+    }
+
+    button {
+      border-color: lightgray;
+      border-style:solid;
+      border-width: 0.5;
+      /* color: white; */
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      /* display: inline-block; */
+      font-size: 12px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    button:hover {
+      background-color: #CC4827;
+      color: white;
+    }
+
+    button:focus{
+      font-weight: bold;
+    }
+
+        </style>
+    </head>
+<body>
+<!-- Create a div where the graph will take place -->
+    <h1>Accessibility curves across the world,
+      ranked from  
+      <span style="color: #CC4827">most accessible</span> to
+      <span style="color: #FAAD6A">least accessible.
+  </h1>
+  <div class="subtitle">
+  <p class="description">Statistical distribution of accessibility for cities around the world. 
+    Each curve represents the probability distribution of accessibility scores for the blocks within a given city.
+    Cities associated with flatter curves have a more <b>unequal</b> distribution of accessibility.</p>
+  </div>
+  <h4>Filter by geographical area</h3>
+  <div class="buttons">
+    <button id="World" type="button">World</button>
+    <button id="North-America" type="button">North America</button>
+    <button id="Europe" type="button">Europe</button>
+    <button id="South-America">Latin America</button>
+    <button id="Oceania">Oceania</button>
+    <button id="Asia">Asia</button>
+    <button id="Africa">Africa</button>
+  </div>
+  <div style="text-align:center;" id="charts"></div>
+</body>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 20, bottom: 55, left: 50},
+        width = 500 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+    
+    d3.json("data/cities_final_cont.json").then((data) => {
+        console.log(data)
+        showData(data.features)
+
+        console.log(d3.select("#South-America").html())
+        
+        d3.selectAll("button").on("click", function() {
+            let value = d3.select(this).html()
+            console.log(value)
+            if (value != "World") {
+              filteredData = data.features.filter(d => d.properties.Continent === value);
+              
+            } else {
+              filteredData = data.features.filter(d => d.properties.Continent !== value)
+            }
+            showData(filteredData)
+          })
+    })
+
+    // get the data
+  function showData(data) {
+    data = data.filter(d=>d.properties.city !== "Ottawa")
+      // Filter city of interest
+      var cities = d3.nest()
+          .key(function(d) { return d.properties.city; })
+          .entries(data);
+    
+      console.log(cities)
+    
+    d3.select("#charts").selectAll("svg").remove()
+        // append the svg object to the body of the page
+    var svg = d3.select("#charts")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")")
+
+      // add the x Axis
+      // maxAccess = d3.max(access)
+      var x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([0, width])
+
+      svg.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x).tickSize(0).ticks(5))
+          .attr("id", "xAxis")
+        //   d3.selectAll("path.domain").remove();
+      // add the y Axis
+      var y = d3.scaleLinear()
+                .range([height, 0])
+                .domain([0, 12]);
+      // svg.append("g")
+      //   // .attr("transform", "translate(0," + height + ")")
+        // .call(d3.axisLeft(y).tickSize(0).ticks(5))
+        // .attr("id", "xAxis")
+
+      svg.append("g")
+          .call(d3.axisLeft(y))
+          .attr("id", "yAxis");          
+
+      var line = d3.line()
+            .curve(d3.curveBasis)
+            .x(function(d) { return x(d[0]); })
+            .y(function(d) { return y(d[1]); });
+
+      cScale = d3.scaleSequential(d3.interpolateOranges)
+                  .domain([0.4, 1.1]);
+      console.log(d3.interpolateOranges)
+      // Compute kernel density estimation
+      var kde = kernelDensityEstimator(kernelEpanechnikov(0.007), x.ticks(30))
+    //   var density =  kde(data.features.map(function(d){ return +d.properties.accessibil_sc; }))
+    //   var density = cities.map(function(d){ return kde(+d.values.properties); })
+    //   var test = cities.filter(function(d){ return +d.values.properties.accessibil_sc; })
+    //   test = cities.map(function(d) {return {
+    //   key: d.key,
+    //   values: d.values[100].properties.accessibil_sc}})
+
+    density = cities.map(function(d) {return {
+        key: d.key,
+        accessibil_sc: d.values.map(d=>d.properties.accessibil_sc),
+        accessibil_median: d3.median(d.values.map(d=>d.properties.accessibil_sc)),
+        values: kde(d.values.map(d=>d.properties.accessibil_sc))}})
+    
+    // density.sort(function(x, y){
+    //     // return d3.ascending(x.MV - x.LV, y.MV - y.LV);
+    //     return d3.descending(+x.accessibil_median, +y.accessibil_median);
+    // })
+// DRAW KDE curves
+    density = density.sort(function(a,b) { return d3.descending(+a.accessibil_median, +b.accessibil_median) })
+      
+      console.log(density)
+      // Plot the curves
+
+
+     dist = svg.selectAll(".line")
+      .data(density)
+      .enter()
+      .append("path")
+	      .attr("id", "curves")
+	      .attr("d", function(d){
+	      	return line(d.values)})
+        .attr("stroke", d=>cScale(+d.accessibil_median))
+          .attr("fill", "white")
+          .attr("opacity", "0.8")
+    //       .attr("stroke", d=>cScale(+d.accessibil_median))
+          .attr("stroke-width", 1)
+          .attr("stroke-linejoin", "round")
+    //       .attr("d", function(d) {return line(d.values); })
+          
+    //   dist.attr("fill", d=>cScale(+d.accessibil_median))
+        // .attr("fill-opac", ".1")
+
+    // Add Labels
+     svg.append("text")
+     .data(density)
+      // .data(density.sort(function(a,b) { return +a.accessibil_median - +b.accessibil_median }))
+        .attr("x", (0))
+        .attr("y", height + 30) // -85 previously
+        .style("text-anchor", "left")
+        // .style("font-size", "12px")
+        .style("font", "18px Georgia")
+        // .attr("fill", "#ff6d00")
+        .attr("fill", d=>cScale(+d.accessibil_median))
+        // .attr("fill", function (d) { return myColor(d.values[0].party); })
+            .text("50 Cities");	
+
+    //  svg.append("text")
+    //   .data(density)
+    //     // .data(density.sort(function(a,b) { return +a.accessibil_median - +b.accessibil_median }))
+    //     .attr("x", (0))
+    //     .attr("y", height + 45) // -85 previously
+    //     .style("text-anchor", "left")
+    //     // .style("font-size", "12px")
+    //     .style("font", "10px Arial")
+    //     // .attr("fill", function (d) { return myColor(d.values[0].party); })
+    //     .text("Accessibility: ")
+    //     // .append("tspan")
+    //     // .attr("font-weight", "bold")
+    //     // .text(d=>Math.round(+d.accessibil_median*100)/100);
+
+    //   // median line
+    //   svg.append("line")
+    //     .data(density)
+    //     .attr("x1", d=>x(+d.accessibil_median))
+    //     .attr("x2", d=>x(+d.accessibil_median))
+    //     .attr("y1", 50)
+    //     .attr("y2", 126)
+    //     // .attr("d", function(d) {return line((+d.accessibil_median, +d.accessibil_median)); })
+    //     .attr("stroke", "grey")
+    //     .style("stroke-dasharray", ("3, 3"))
+    //     .style("opacity", "0.5")
+    //     .attr("stroke-width", "0.5px")
+
+    //   // median label
+    //   var medText = d3.select("#charts").select("svg")
+    //       .data(density)
+    //       // .attr("class", "description")
+    //       .append("text")
+    //       .text("Median accessibility")
+    //       .attr("x", d=>x(+d.accessibil_median))
+    //       .attr("y", 68)
+    //       .style("font-family", "arial")
+    //       .style("font-size", "10")
+    //       .attr("text-anchor", "middle")
+    //       .attr("fill", "rgb(167, 167, 167)")
+      
+    // console.log(d3.max(density, d=>+d.accessibil_sc))
+
+    // access = cities.map(function(d) {return {
+    //     accessibil_sc: d.values.map(d=>d.properties.accessibil_sc)}})
+    
+    // console.log(access)
+    // build the HISTOGRAMS
+      //   thresholds = x.ticks(130)
+      //   // console.log(thresholds)
+      //   bins = d3.histogram()
+      //           // .value(d=>+d.accessibil_sc)
+      //           .domain(x.domain())
+      //           .thresholds(thresholds)
+      //           // (access[0].accessibil_sc)
+      // // console.log(bins)
+
+      // regions = cities.map(function(d) {return {
+      //   key: d.key,
+      //   values: bins(d.values.map(d=>d.properties.accessibil_sc))
+      //   // values: bins(d.values)
+      //   }})
+      
+      // console.log(regions)
+      //   // yBins = d3.scaleLinear()
+      //   //         .domain([0, d3.max(bins, d => d.length) / density.length])
+      //   //         .range([height/4, 0])
+
+      // // calculate local y-max for each region
+      // var localMax = regions.map(function(d) {
+      //     return {
+      //       region: d.key,
+      //       max: d3.max(d.values, function(s) {
+      //         return s.length;
+      //       })
+      //     }
+      //   })
+      //   console.log(localMax)
+
+      // // find global max
+      //   y.domain([0, d3.max(localMax, function(d) { return d.max; })])
+
+      //   // for each region, set up a svg with axis and label
+      // var svg = d3.select("#charts").selectAll("svg")
+      //     .data(regions)
+      //     .enter()
+      //     .append("svg")
+      //     .attr("width", width + margin.left + margin.right)
+      //     .attr("height", height + margin.top + margin.bottom);
+
+      // svg.append("text")
+      //     .attr("class", "region label")
+      //     .attr("x", margin.left)
+      //     .attr("y", margin.top/2)
+      //     .attr("font-size", "1.2em")
+      //     .text(function(d) { return d.key; })
+
+      // var hist = svg.append("g")
+      //     .attr("class", "hist")
+      //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // hist.append("g")
+      //     .attr("class", "axis")
+      //     .attr("transform", "translate(0" + "," + height + ")")
+      //     .call(d3.axisBottom(x)
+      //       .tickValues(x.domain())
+      //     );
+
+      // // draw histogram bars
+      // var bars = hist.selectAll(".bar")
+      //     .data(function(d) { return d.values; })
+      //     .enter()
+      //     .append("g")
+      //     .attr("class", "bar")
+      //     .attr("transform", function(s) {
+      //       return "translate(" + x(s.x0) + "," + y(s.length) + ")";
+      //     });
+
+      // bars.append("rect")
+      //     .attr("class", "bar")
+      //     .attr("x", 1)
+      //     .attr("width", function(s) { return x(s.x1) - x(s.x0); })
+      //     .attr("height", function(s) { return height - y(s.length); })
+      //     .attr("fill", "#c9c9c9");
+
+    //   // draw the histogram
+    //   hist = svg.append("g")
+    //         .attr("id", "hist")
+    //         // .attr("fill", "none")
+    //         // .attr("fill", "grey")
+    //         .selectAll("rect")
+    //         // .attr("stroke", "darkgrey")
+    //         .data(regions)
+    //         .enter()
+    //         .append("g")
+
+    // // var hist = d3.select("#charts").selectAll("svg")
+    // //   .data(regions)
+    // //   .enter()
+    // //   .append("svg")
+    // //   .append("g")
+    // //   .attr("id", "hist")
+            
+    // var bars = hist.selectAll(".bar")
+    //         .data(function(d) { return d.values; })
+    //         .enter()
+    //         .append("g")
+    //         .attr("class", "bar")
+    //         .attr("transform", function(s) {
+    //           return "translate(" + x(s.x0) + "," + y(s.length) + ")";});
+    
+    // bars.append("rect")
+    //         .attr("class", "bar")
+    //         .attr("x", 1)
+    //         .attr("width", function(s) { return x(s.x1) - x(s.x0); })
+    //         .attr("height", function(s) { return height - y(s.length); })
+    //         .attr("fill", "#c9c9c9")
+    //         .attr("opacity", "0.4")
+
+    };
+    // });
+    
+    // Function to compute density
+    function kernelDensityEstimator(kernel, X) {
+      return function(V) {
+        return X.map(function(x) {
+          return [x, d3.mean(V, function(v) { return kernel(x - v); })];
+        });
+      };
+    }
+    function kernelEpanechnikov(k) {
+      return function(v) {
+        return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+      };
+    }
+    </script>
+        
+</html>
