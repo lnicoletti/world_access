@@ -119,7 +119,7 @@
         width = 210 - margin.left - margin.right,
         height = 210 - margin.top - margin.bottom;
     
-    d3.json("data/cities_final_cont.json").then((data) => {
+    d3.json("data/cities_final.json").then((data) => {
         console.log(data)
         showData(data.features)
 
@@ -146,6 +146,11 @@
           .entries(data);
     
       console.log(cities)
+
+      // // filter for paper
+      // cities = cities.filter(d=>(d.key === "Paris")|(d.key === "Tokyo")|(d.key === "Bogota")|
+      //                           (d.key === "Taipei")|(d.key === "Sydney")|(d.key === "Istanbul")|
+      //                           (d.key === "Nairobi")|(d.key === "Ho Chi Minh")|(d.key === "Houston"))
     
     d3.select("#charts").selectAll("svg").remove()
         // append the svg object to the body of the page

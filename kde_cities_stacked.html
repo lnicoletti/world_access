@@ -121,7 +121,7 @@
         width = 500 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
     
-    d3.json("data/cities_final_cont.json").then((data) => {
+    d3.json("data/cities_final.json").then((data) => {
         console.log(data)
         showData(data.features)
 
@@ -248,7 +248,7 @@
         // .attr("fill", "#ff6d00")
         .attr("fill", d=>cScale(+d.accessibil_median))
         // .attr("fill", function (d) { return myColor(d.values[0].party); })
-            .text("50 Cities");	
+            .text("54 Cities");	
 
     //  svg.append("text")
     //   .data(density)
