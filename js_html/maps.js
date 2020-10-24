@@ -49,14 +49,131 @@
 
     // console.log(tiles)
 
+    // slider values
+    var dataWeights = d3.range(0, 11).map(function(d) {
+        // return new Date(2000 + d, 01, 01);
+        return (0 + d)/10;
+        });
+        console.log(dataWeights)
+
+    // initial weights for each category
+    alWeight = 0.1
+    cWeight = 0.15
+    edWeight = 0.15
+    fcWeight = 0.15
+    hwbWeight = 0.2
+    mWeight = 0.15
+    nWeight = 0.1
+
+    function makeSlider(sliderId, initialWeight){
+        // Make the slider
+        var sliderWeights = d3
+        .sliderBottom()
+        .min(d3.min(dataWeights))
+        .max(d3.max(dataWeights))
+        .step(0.05)
+        .width(265)
+        .tickValues(dataWeights)
+        .default(initialWeight)
+        // .on('onchange', val => {
+        //   d3.select('p#value').text(d3.timeFormat('%Y')(val));
+        // console.log(val)});
+
+        var weights = d3
+        .selectAll(sliderId)
+        .append("center")
+        .append('svg')
+        .attr('width', 300)
+        .attr('height', 50)
+        .append('g')
+        .attr('transform', 'translate(15,10)')
+
+        // var cWeights = d3
+        // .selectAll('#sliderC')
+        // .append("center")
+        // .append('svg')
+        // .attr('width', 300)
+        // .attr('height', 50)
+        // .append('g')
+        // .attr('transform', 'translate(15,10)')
+
+        // alWeights.call(sliderWeights);
+        weights.call(sliderWeights)
+        return sliderWeights
+    }
+
+    // create a slider for each category
+    var sliderAL = makeSlider("#sliderAL", alWeight)
+    var sliderC = makeSlider("#sliderC", cWeight)
+    var sliderED = makeSlider("#sliderED", edWeight)
+    var sliderFC = makeSlider("#sliderFC", fcWeight)
+    var sliderHWB = makeSlider("#sliderHWB", hwbWeight)
+    var sliderM = makeSlider("#sliderM", mWeight)
+    var sliderN = makeSlider("#sliderN", nWeight)
+
+    // Calculate new accessibility score
+    function accessScore(data) {
+        data.features.forEach(d=> d.properties.accessibil_sc = alWeight*d.properties.active_liv_r + cWeight*d.properties.community_r + 
+            edWeight*d.properties.education_r + fcWeight*d.properties.food_choic_r + hwbWeight*d.properties.health_wel_r + 
+            mWeight*d.properties.mobility_r + nWeight*d.properties.nightlife_r);
+    }
+
+    function updateWeights(slider, data) {
+        slider.on("onchange", val => {
+            if (slider===sliderAL) {
+                alWeight = val
+            } else if (slider===sliderC) {
+                cWeight = val
+            } else if (slider===sliderED) {
+                edWeight = val
+            } else if (slider===sliderFC) {
+                fcWeight = val
+            } else if (slider===sliderHWB) {
+                hwbWeight = val
+            } else if (slider===sliderM) {
+                mWeight = val
+            } else if (slider===sliderN) {
+                nWeight = val
+            }
+            // console.log(alWeight)
+            accessScore(data)
+            // showData(data, initial_dataset)
+
+            // update the map
+            cities = data.features.filter(function(d){return d.properties.city == initial_dataset })
+            cScale = d3.scaleSequentialQuantile([...cities.map(d=>d.properties.accessibil_sc)], d3.interpolateInferno)
+            plot
+                .data(cities)
+                .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
+            // update the kde and histogram
+            access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
+            kde = kernelDensityEstimator(kernelEpanechnikov(0.007), x.ticks(90))
+            density =  kde(access)
+            line
+                .datum(density)
+                .transition()
+                .duration(1000)
+            
+
+        })
+    }
+
     d3.json("../data/cities_final.json").then((data) => {
-        
-        console.log(data)   
+
+        accessScore(data)
+
+        console.log(data)  
         populateDropdown(data)
         
         initial_dataset = "Chicago"
         showData(data, initial_dataset)
-
+        updateWeights(sliderAL, data)
+        updateWeights(sliderC, data)
+        updateWeights(sliderED, data)
+        updateWeights(sliderFC, data)
+        updateWeights(sliderHWB, data)
+        updateWeights(sliderM, data)
+        updateWeights(sliderN, data)
         // showData(data)
         // showData(data,tiles)
 
