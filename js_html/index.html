@@ -1,0 +1,50 @@
+<meta charset="utf-8">
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+<body>
+    <h1>Access to Urban Services Around the World 
+    </h1>
+    <div class="subtitle">
+    <p class="description">Statistical and spatial distribution of accessibility for cities around the world. 
+      Each curve represents the probability distribution of accessibility scores for the blocks within a given city.
+      Cities associated with flatter curves have a more <b>unequal</b> distribution of accessibility.</p>
+    </div>
+    <h4>Choose a city</h4>
+    <select id="dropdown"></select>
+    <!-- <input id="city"></input> -->
+    <p></p>
+        <div class="mainView">
+            <div>
+                <svg id="charts" height="600" width="750" transform="translate(0,0)"></svg>
+            </div>
+            <div>
+                <svg id="summary" height="600" width="600" transform="translate(0,0)"></svg>
+            </div>
+        </div>
+        <div class="osm-attribution-container">
+            <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
+        </div>
+
+    <!-- <svg id="container" height="620" width="1200">
+        <g id="charts" transform="translate(0,0)"></g>
+        <g id="summary" transform="translate(850,20)"></g>
+    </svg>
+    <div class="osm-attribution-container">
+        <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
+    </div> -->
+
+<!-- <svg id="charts" width="400" height="300"></svg> -->
+
+        
+</body>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3-tile.v0.0.min.js"></script>
+<!-- <script type="module">import legend from 'd3-legend'</script> -->
+<!-- <script src="https://unpkg.com/d3-scale-cluster@1.3.1/dist/d3-scale-cluster.min.js"></script> -->
+<!-- <script src="https://unpkg.com/d3-svg-legend@1.13.0/d3-legend.min.js"></script> -->
+<script src="maps.js"></script>
+ </html>

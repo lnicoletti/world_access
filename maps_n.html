@@ -240,6 +240,7 @@
         
         initial_dataset = "Chicago"
         showData(data, initial_dataset)
+        showHist(data, initial_dataset)
 
         // d3.select("#dropdown").on("change", function(d) {
         //     // recover the option that has been chosen
@@ -283,12 +284,9 @@
     function showData(data, selected_dataset) {
 
     /////MAP PLOT
-        console.log(data)
+        // console.log(data)
         // filter data for city display
         cities = data.features.filter(function(d){return d.properties.city == selected_dataset });
-        // prepare data for kde
-        access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
-      
         console.log(cities)
         
         // Create feature collection for projection
@@ -318,13 +316,13 @@
         // const g = svg.append('g');
 
         // create the tiles for background map
-        var pi = Math.PI,
-        tau = 2 * pi;
-        let tiles = d3.tile()
-                .size([width, height])
-                .scale(projection.scale() * tau)
-                .translate(projection([0, 0]))
-                ();
+        // var pi = Math.PI,
+        // tau = 2 * pi;
+        // let tiles = d3.tile()
+        //         .size([width, height])
+        //         .scale(projection.scale() * tau)
+        //         .translate(projection([0, 0]))
+        //         ();
 
         // append the svg object to the body of the page
         var svg = d3.select("#charts")
@@ -333,19 +331,19 @@
         // draw the legend for map
         
         // create the background map
-        let image = svg.selectAll("image")
-            .data(tiles)
-            .enter().append("image")
-            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-            // .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/dark_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-            // .attr("xlink:href", function(d){ return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-            // .attr("xlink:href", function(d){ return "https://tiles.stadiamaps.com/tiles/alidade_smooth/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-            .attr("x", function(d) { return (d[0] + tiles.translate[0]) * tiles.scale; })
-            .attr("y", function(d) { return (d[1] + tiles.translate[1]) * tiles.scale; })
-            .attr("width", tiles.scale)
-            .attr("height", tiles.scale)
-            .attr("transform", "translate(" + (0) + "," + (30) + ")")
-            .attr("id", "map")
+        // let image = svg.selectAll("image")
+        //     .data(tiles)
+        //     .enter().append("image")
+        //     .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+        //     // .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/dark_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+        //     // .attr("xlink:href", function(d){ return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+        //     // .attr("xlink:href", function(d){ return "https://tiles.stadiamaps.com/tiles/alidade_smooth/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+        //     .attr("x", function(d) { return (d[0] + tiles.translate[0]) * tiles.scale; })
+        //     .attr("y", function(d) { return (d[1] + tiles.translate[1]) * tiles.scale; })
+        //     .attr("width", tiles.scale)
+        //     .attr("height", tiles.scale)
+        //     .attr("transform", "translate(" + (0) + "," + (30) + ")")
+        //     .attr("id", "map")
 
         // plot the map
         let path = d3.geoPath()
@@ -362,16 +360,17 @@
         
         // console.log(tiles)
         
-        plot = svg.selectAll("path")
+        let hexjoin = svg.selectAll("path")
                     .data(cities)
-                    .enter().append("path")
+
+        let newhexes = hexjoin.enter().append("path")
                     .attr("id", "map")
                     .attr("class", "hex")
-                    .attr("d", d => path(d))
-                    // .attr("stroke", "white")
-                    // .attr("stroke-width", "0.05px")
-                    // .attr("fill", "black")
-                    .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
+                    // .attr("d", d => path(d))
+                    // // .attr("stroke", "white")
+                    // // .attr("stroke-width", "0.05px")
+                    // // .attr("fill", "black")
+                    // .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
                     // .call(updateFill, selected_dataset)
                     .attr("opacity", "0.9")
                     .attr("transform", "translate(" + (0) + "," + (30) + ")")
@@ -383,9 +382,36 @@
                     .on("mouseover.bar", function(d) { displayData(d); })
                     .on("mouseout.bar", hideData);
 
-        
+        hexjoin.merge(newhexes).transition()
+                    .attr("d", d => path(d))
+                    // .attr("stroke", "white")
+                    // .attr("stroke-width", "0.05px")
+                    // .attr("fill", "black")
+                    .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
 
+        hexjoin.exit().remove()
+        console.log(hexjoin)
+
+
+        // let hexjoin = svg.selectAll("path")
+        //             .data(cities)
+        //             .join("path")
+        //             .attr("id", "map")
+        //             .attr("class", "hex")
+        //             .attr("d", d => path(d))
+        //             .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
+        //             .attr("opacity", "0.9")
+
+
+        svg.call(zoom);
+        // image.call(zoom)
+    }
+        
+    function showHist(data, selected_dataset) {
 ////////// KDE PLOT
+        cities = data.features.filter(function(d){return d.properties.city == selected_dataset });
+        // prepare data for kde
+        access = cities.map(function(d){ return +d.properties.accessibil_sc; })     
         // create the kde distribution and plot it
         var dist = d3.select("#summary")
                     .append("svg")
@@ -518,10 +544,10 @@
             .call(wrap, 150)
 
             // wrap(distText, 150)
-
+        
   ////// UPDATE            
     // update kde/hist plot when city changes
-    function update(selectedGroup) {
+    function updateHist(selectedGroup) {
         // Create new data with the selection
         var cities = data.features.filter(function(d){return d.properties.city == selectedGroup });
         access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
@@ -533,16 +559,6 @@
         delete featureCollection['cities'];
         // define new quantile colorscale
         let cScale = d3.scaleSequentialQuantile([...cities.map(d=>d.properties.accessibil_sc)], d3.interpolateInferno)
-
-        // set new projection               
-        let projection = d3.geoMercator()
-                            .fitSize([width, height], featureCollection)
-        
-        tiles = d3.tile()
-                .size([width, height])
-                .scale(projection.scale() * tau)
-                .translate(projection([0, 0]))
-                ();
 
         // new bins for histogram
         bins = d3.histogram()
@@ -606,72 +622,6 @@
             .text("The median street in " + selectedGroup + " has an accessibility of: " + d3.median(cities, d => Math.round(+d.properties.accessibil_sc*100)/100))
             .call(wrap, 150)
             
-        // Update map
-        let path = d3.geoPath()
-                     .projection(projection)
-        
-        d3.selectAll("#map")
-                .remove("#map")
-
-        image = svg.selectAll("image")
-        // image
-            .data(tiles)
-            // .transition()
-            // .duration(1000)
-            .enter().append("image")
-            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-            .attr("x", function(d) { return (d[0] + tiles.translate[0]) * tiles.scale; })
-            .attr("y", function(d) { return (d[1] + tiles.translate[1]) * tiles.scale; })
-            .attr("width", tiles.scale)
-            .attr("height", tiles.scale)
-            .attr("transform", "translate(" + (0) + "," + (30) + ")")
-            .attr("id", "map")
-
-        plot = svg.selectAll("path")
-        // plot
-            .data(cities)
-            // .transition()
-            // .duration(200)
-            .enter().append("path")
-            .attr("id", "map")
-            .attr("class", "hex")
-            .attr("d", d => path(d))
-            .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
-            .attr("opacity", "0.9")
-            .attr("transform", "translate(" + (0) + "," + (30) + ")")
-            .on("mouseover.tip", function() { d3.select(this).attr("stroke", "red").raise();})
-            .on("mouseout.tip", function() { d3.select(this).attr("stroke", null).raise();})
-            .on("mouseover.opall", function() { d3.selectAll(".hex").attr("opacity", "0.2");})
-            .on("mouseover.opt", function() { d3.select(this).attr("opacity", "0.9");})
-            .on("mouseout.opall", function() { d3.selectAll("path").attr("opacity", "0.9");})
-            .on("mouseover.bar", function(d) { displayData(d); })
-            .on("mouseout.bar", hideData);
-
-        // u = svg.selectAll("path")
-        //     .data(cities)
-        // u
-        // // plot
-        //     // .data(cities)
-        //     .enter().append("path")
-        //     .merge(u) // get the already existing elements as well
-        //     .transition() // and apply changes to all of them
-        //     .duration(800)
-        //     .attr("id", "map")
-        //     .attr("class", "hex")
-        //     .attr("d", d => path(d))
-        //     .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
-        //     .attr("opacity", "0.9")
-        //     .attr("transform", "translate(" + (0) + "," + (30) + ")")
-        //     .on("mouseover.tip", function() { d3.select(this).attr("stroke", "red").raise();})
-        //     .on("mouseout.tip", function() { d3.select(this).attr("stroke", null).raise();})
-        //     .on("mouseover.opall", function() { d3.selectAll(".hex").attr("opacity", "0.2");})
-        //     .on("mouseover.opt", function() { d3.select(this).attr("opacity", "0.9");})
-        //     .on("mouseout.opall", function() { d3.selectAll("path").attr("opacity", "0.9");})
-        //     .on("mouseover.bar", function(d) { displayData(d); })
-        //     .on("mouseout.bar", hideData);
-        // u
-        //     .exit()
-        //     .remove()
 
         }
 
@@ -679,11 +629,10 @@
         // recover the option that has been chosen
         var selectedOption = d3.select(this).property("value")
         // run the updateChart function with this selected option
-        update(selectedOption)
+        updateHist(selectedOption)
+        showData(data, selectedOption)
     })
     
-        svg.call(zoom);
-        image.call(zoom)
     };
 
     function zoomed() {

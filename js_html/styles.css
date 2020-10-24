@@ -1,0 +1,121 @@
+
+    /* #yAxis {
+        display:none;
+    } */
+
+   #xAxis, #yAxis path{
+        stroke: grey;
+        display:none
+    }
+
+    #xAxis, #yAxis text {
+            stroke: none;
+            fill: black;
+            font-size: 10px;
+        }
+
+    #yAxis line {
+          display:None
+        }
+
+    #xAxis line {
+          display:None
+    }
+
+    #kdexAxis path, #xAxis path {
+        display:None
+    }
+
+    #kdeyAxis {
+        display: None
+    }
+
+    .osm-attribution-container {
+        bottom: -10;
+        right: 760;
+        position: absolute;
+        display: block;
+        margin: 0 10 5;
+        font-size:12px;
+    }
+
+    body {
+    /* margin: 0; */
+    /* overflow:hidden; */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color:rgb(211, 217, 218);
+    }
+
+    h1 {/* text-align: left; */
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        /* font-size: x-large; */
+        font-weight: bold;
+        }
+
+    h5 {
+        color: grey;
+        font-weight: bolder;
+        font-size:14px
+    }
+
+    .mainview {
+        display: flex;
+    }
+
+    svg {
+            border: 1px solid black;
+    }
+
+    /* select, input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; 
+    background-color: rgb(224, 230, 231); 
+    font-weight: bold; 
+    } */
+
+    #dropdown {
+        width: 200px;
+        height: 30px;
+        background: rgb(211, 217, 218);
+        border-width: 1.2px;
+        border-color: grey;
+        font-weight:bolder;
+        font-size:18px;
+        text-indent: 52px;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    #city {
+        width: 200px;
+        height: 30px;
+        background: rgb(211, 217, 218);
+        border-width: 1.2px;
+        border-color: grey;
+        font-weight:bolder;
+        font-size:18px;
+        vertical-align: middle;
+    }
+
+    #dropdown.selected, #dropdown:hover {
+        background:purple;
+        color: #fff;
+    }   
+
+    .description {
+      max-width: 520px;
+      text-align: justify;
+      text-anchor: left;
+      color: rgb(167, 167, 167);
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: small;
+    }
+
+    .subtitle {
+      margin-top: 0;
+      margin-bottom: 10;
+      display: flex;
+      justify-content: left;
+    }

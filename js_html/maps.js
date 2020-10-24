@@ -1,193 +1,8 @@
-<meta charset="utf-8">
-<html>
-    <head>
-        <style>
-    /* #yAxis {
-        display:none;
-    } */
 
-   #xAxis, #yAxis path{
-        stroke: grey;
-        display:none
-    }
-
-    #xAxis, #yAxis text {
-            stroke: none;
-            fill: black;
-            font-size: 10px;
-        }
-
-    #yAxis line {
-          display:None
-        }
-
-    #xAxis line {
-          display:None
-    }
-
-    #kdexAxis path, #xAxis path {
-        display:None
-    }
-
-    #kdeyAxis {
-        display: None
-    }
-
-    .osm-attribution-container {
-        bottom: -10;
-        right: 760;
-        position: absolute;
-        display: block;
-        margin: 0 10 5;
-        font-size:12px;
-    }
-
-    body {
-    /* margin: 0; */
-    /* overflow:hidden; */
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    background-color:rgb(211, 217, 218);
-    }
-
-    h1 {/* text-align: left; */
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        /* font-size: x-large; */
-        font-weight: bold;
-        }
-
-    h5 {
-        color: grey;
-        font-weight: bolder;
-        font-size:14px
-    }
-
-    .mainview {
-        display: flex;
-    }
-
-    svg {
-            border: 1px solid black;
-    }
-
-    /* select, input {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none; 
-    background-color: rgb(224, 230, 231); 
-    font-weight: bold; 
-    } */
-
-    #dropdown {
-        width: 200px;
-        height: 30px;
-        background: rgb(211, 217, 218);
-        border-width: 1.2px;
-        border-color: grey;
-        font-weight:bolder;
-        font-size:18px;
-        text-indent: 52px;
-        margin-top: 0;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    #city {
-        width: 200px;
-        height: 30px;
-        background: rgb(211, 217, 218);
-        border-width: 1.2px;
-        border-color: grey;
-        font-weight:bolder;
-        font-size:18px;
-        vertical-align: middle;
-    }
-
-    #dropdown.selected, #dropdown:hover {
-        background:purple;
-        color: #fff;
-    }   
-
-    .description {
-      max-width: 520px;
-      text-align: justify;
-      text-anchor: left;
-      color: rgb(167, 167, 167);
-      font-family: Verdana, Geneva, Tahoma, sans-serif;
-      font-size: small;
-    }
-
-    .subtitle {
-      margin-top: 0;
-      margin-bottom: 10;
-      display: flex;
-      justify-content: left;
-    }
-
-        </style>
-    </head>
-
-<body>
-    <h1>Access to Urban Services Around the World 
-    </h1>
-    <div class="subtitle">
-    <p class="description">Statistical and spatial distribution of accessibility for cities around the world. 
-      Each curve represents the probability distribution of accessibility scores for the blocks within a given city.
-      Cities associated with flatter curves have a more <b>unequal</b> distribution of accessibility.</p>
-    </div>
-    <h4>Choose a city</h4>
-    <select id="dropdown"></select>
-    <!-- <input id="city"></input> -->
-    <p></p>
-        <div class="mainView">
-            <div>
-                <svg id="charts" height="600" width="750" transform="translate(0,0)"></svg>
-            </div>
-            <div>
-                <svg id="summary" height="600" width="600" transform="translate(0,0)"></svg>
-            </div>
-        </div>
-        <div class="osm-attribution-container">
-            <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
-        </div>
-
-    <!-- <svg id="container" height="620" width="1200">
-        <g id="charts" transform="translate(0,0)"></g>
-        <g id="summary" transform="translate(850,20)"></g>
-    </svg>
-    <div class="osm-attribution-container">
-        <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
-    </div> -->
-
-<!-- <svg id="charts" width="400" height="300"></svg> -->
-
-        
-</body>
-<!-- Load d3.js -->
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="https://d3js.org/d3-tile.v0.0.min.js"></script>
-<!-- <script type="module">import legend from 'd3-legend'</script> -->
-<!-- <script src="d3.min.js"></script> -->
-<!-- <script>
-    // define options of dropdown menu
-    var dropdown_options = [{value:'Chicago', text: 'Chicago'}, {value:'New York City',text:'New York City'}, {value:'Seattle',text: 'Seattle'}, {value:'Toronto',text: 'Toronto'}, {value:'Vancouver',text: 'Vancouver'},
-       {value:'Montreal',text: 'Montreal'}, {value:'Ottawa',text: 'Ottawa'}, {value:'Edmonton',text: 'Edmonton'}, {value:'Calgary',text: 'Calgary'}, {value:'Paris',text: 'Paris'}, {value:'Singapore',text: 'Singapore'},
-       {value:'Mexico City',text:'Mexico City'}, {value:'London',text:'London'}, {value:'Melbourne',text:'Melbourne'}, {value:'Sydney',text:'Sydney'}, {value:'Shanghai',text:'Shanghai'},
-       {value:'Beijing',text:'Beijing'}, {value:'Madrid',text:'Madrid'}, {value:'Milan',text:'Milan'}, {value:'Bangkok',text:'Bangkok'}, {value:'Seoul',text:'Seoul'}, {value:'Rome',text:'Rome'}, {value:'Taipei',text:'Taipei'},
-       {value:'Barcelona',text:'Barcelona'}, {value:'Amsterdam',text:'Amsterdam'}, {value:'Buenos Aires',text:'Buenos Aires'}, {value:'Santiago',text:'Santiago'}, {value:'Istanbul',text: 'Istanbul'},
-       {value:'Tokyo',text:'Tokyo'}, {value:'Rio de Janeiro',text:'Rio de Janeiro'}, {value:'Cape Town',text:'Cape Town'}, {value:'Berlin',text:'Berlin'}, {value:'Nairobi',text:'Nairobi'},
-       {value:'Moscow',text:'Moscow'}, {value:'Bogota',text:'Bogota'}, {value:'Manila',text:'Manila'}, {value:'Copenhagen',text:'Copenhagen'}, {value:'Athens',text:'Athens'}, {value:'Budapest',text:'Budapest'},
-       {value:'Jakarta',text:'Jakarta'}, {value:'Auckland',text:'Auckland'}, {value:'Dublin',text:'Dublin'}, {value:'Warsaw',text:'Warsaw'}, {value:'Edinburgh',text:'Edinburgh'},
-       {value:'Stockholm',text:'Stockholm'}, {value:'Zurich',text:'Zurich'}, {value:'Lisbon',text:'Lisbon'}, {value:'Ho Chi Minh',text:'Ho Chi Minh'}, {value:'Lima',text:'Lima'}]
-
-</script> -->
-<!-- <script src="https://unpkg.com/d3-scale-cluster@1.3.1/dist/d3-scale-cluster.min.js"></script> -->
-<!-- <script src="https://unpkg.com/d3-svg-legend@1.13.0/d3-legend.min.js"></script> -->
-<script>
     // set the dimensions and margins of the graph
     var margin = {top: 30, right: 30, bottom: 55, left: 50},
         width = 800 - margin.left - margin.right, // 830
         height = 650 - margin.top - margin.bottom; // 685
-    
     
     // // populate drop-down
     // d3.select("#dropdown")
@@ -234,23 +49,13 @@
 
     // console.log(tiles)
 
-    d3.json("data/cities_final.json").then((data) => {
+    d3.json("../data/cities_final.json").then((data) => {
+        
         console.log(data)   
         populateDropdown(data)
         
         initial_dataset = "Chicago"
         showData(data, initial_dataset)
-
-        // d3.select("#dropdown").on("change", function(d) {
-        //     // recover the option that has been chosen
-        //     var selectedCity = d3.select(this).property("value")
-        //     // run the updateChart function with this selected option
-        //     d3.selectAll(".Raceline").remove()
-        //     d3.selectAll(".Raceaxis").remove()
-        //     d3.selectAll(".Racelegend").remove()
-        //     d3.selectAll(".raceAxisText").remove()
-        //     drawLines(data, selectedCity)
-        //     })
 
         // showData(data)
         // showData(data,tiles)
@@ -940,7 +745,3 @@
         }
      });
     }
-    
-    </script>
-        
-</html>
