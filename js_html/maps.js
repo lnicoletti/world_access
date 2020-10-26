@@ -57,13 +57,22 @@
         console.log(dataWeights)
 
     // initial weights for each category
-    alWeight = 0.1
-    cWeight = 0.15
-    edWeight = 0.15
-    fcWeight = 0.15
-    hwbWeight = 0.2
-    mWeight = 0.15
-    nWeight = 0.1
+    // alWeight = 0.1
+    // cWeight = 0.15
+    // edWeight = 0.15
+    // fcWeight = 0.15
+    // hwbWeight = 0.2
+    // mWeight = 0.15
+    // nWeight = 0.1
+
+    initialWeights = {alWeight: 0.1, cWeight: 0.15, 
+                      edWeight: 0.15, fcWeight: 0.15, 
+                      hwbWeight: 0.2, mWeight: 0.15, 
+                      nWeight: 0.1}
+    
+    // create variable to be updated on slider call
+    newWeights = _.clone(initialWeights)
+    console.log(newWeights)
 
     function makeSlider(sliderId, initialWeight){
         // Make the slider
@@ -81,7 +90,7 @@
 
         var weights = d3
         .selectAll(sliderId)
-        .append("center")
+        .append("left")
         .append('svg')
         .attr('width', 300)
         .attr('height', 50)
@@ -103,77 +112,143 @@
     }
 
     // create a slider for each category
-    var sliderAL = makeSlider("#sliderAL", alWeight)
-    var sliderC = makeSlider("#sliderC", cWeight)
-    var sliderED = makeSlider("#sliderED", edWeight)
-    var sliderFC = makeSlider("#sliderFC", fcWeight)
-    var sliderHWB = makeSlider("#sliderHWB", hwbWeight)
-    var sliderM = makeSlider("#sliderM", mWeight)
-    var sliderN = makeSlider("#sliderN", nWeight)
+    var sliderAL = makeSlider("#sliderAL", initialWeights.alWeight)
+    var sliderC = makeSlider("#sliderC", initialWeights.cWeight)
+    var sliderED = makeSlider("#sliderED", initialWeights.edWeight)
+    var sliderFC = makeSlider("#sliderFC", initialWeights.fcWeight)
+    var sliderHWB = makeSlider("#sliderHWB", initialWeights.hwbWeight)
+    var sliderM = makeSlider("#sliderM", initialWeights.mWeight)
+    var sliderN = makeSlider("#sliderN", initialWeights.nWeight)
 
-    // Calculate new accessibility score
-    function accessScore(data) {
-        data.features.forEach(d=> d.properties.accessibil_sc = alWeight*d.properties.active_liv_r + cWeight*d.properties.community_r + 
-            edWeight*d.properties.education_r + fcWeight*d.properties.food_choic_r + hwbWeight*d.properties.health_wel_r + 
-            mWeight*d.properties.mobility_r + nWeight*d.properties.nightlife_r);
+    // function to reset the sliders
+    function resetSliders() {
+        sliderAL.value(initialWeights.alWeight)
+        sliderC.value(initialWeights.cWeight)
+        sliderED.value(initialWeights.edWeight)
+        sliderFC.value(initialWeights.fcWeight)
+        sliderHWB.value(initialWeights.hwbWeight)
+        sliderM.value(initialWeights.mWeight)
+        sliderN.value(initialWeights.nWeight)
     }
 
-    function updateWeights(slider, data) {
+    // Calculate new accessibility score
+    function accessScore(data, weightData) {
+        data.features.forEach(d=> d.properties.accessibil_sc = weightData.alWeight*d.properties.active_liv_r + 
+            weightData.cWeight*d.properties.community_r + weightData.edWeight*d.properties.education_r + 
+            weightData.fcWeight*d.properties.food_choic_r + weightData.hwbWeight*d.properties.health_wel_r + 
+            weightData.mWeight*d.properties.mobility_r + weightData.nWeight*d.properties.nightlife_r);
+    }
+
+    // update map and histogram/kde with the new weights
+    function updateWeights(slider, data, selected_city) {
         slider.on("onchange", val => {
+        //     if (sliderAL.value + sliderC.value + sliderED.value + sliderFC.value + sliderHWB.value + sliderM.value + sliderN.value <= 1) {
+        //         if (slider===sliderAL) {
+        //             newWeights.alWeight = val
+        //         } else if (slider===sliderC) {
+        //             newWeights.cWeight = val
+        //         } else if (slider===sliderED) {
+        //             newWeights.edWeight = val
+        //         } else if (slider===sliderFC) {
+        //             newWeights.fcWeight = val
+        //         } else if (slider===sliderHWB) {
+        //             newWeights.hwbWeight = val
+        //         } else if (slider===sliderM) {
+        //             newWeights.mWeight = val
+        //         } else if (slider===sliderN) {
+        //             newWeights.nWeight = val
+        //         }
+
+        //     } else {
+        //         slider.attr("disable")
+        //     }
             if (slider===sliderAL) {
-                alWeight = val
+                newWeights.alWeight = val
             } else if (slider===sliderC) {
-                cWeight = val
+                newWeights.cWeight = val
             } else if (slider===sliderED) {
-                edWeight = val
+                newWeights.edWeight = val
             } else if (slider===sliderFC) {
-                fcWeight = val
+                newWeights.fcWeight = val
             } else if (slider===sliderHWB) {
-                hwbWeight = val
+                newWeights.hwbWeight = val
             } else if (slider===sliderM) {
-                mWeight = val
+                newWeights.mWeight = val
             } else if (slider===sliderN) {
-                nWeight = val
+                newWeights.nWeight = val
             }
-            // console.log(alWeight)
-            accessScore(data)
+            console.log(newWeights)
+            accessScore(data, newWeights)
             // showData(data, initial_dataset)
 
             // update the map
-            cities = data.features.filter(function(d){return d.properties.city == initial_dataset })
+            cities = data.features.filter(function(d){return d.properties.city == selected_city })
             cScale = d3.scaleSequentialQuantile([...cities.map(d=>d.properties.accessibil_sc)], d3.interpolateInferno)
             plot
                 .data(cities)
                 .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
             // update the kde and histogram
             access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
+            x = d3.scaleLinear()
+                        .domain([0, d3.max(access)])
+                        .range([0, width/1.5]);
+            y = d3.scaleLinear()
+                        .range([height/4, 0])
+                        .domain([0, 7]);
+
             kde = kernelDensityEstimator(kernelEpanechnikov(0.007), x.ticks(90))
             density =  kde(access)
+             // new bins for histogram
+            bins = d3.histogram()
+                    .domain(x.domain())
+                    .thresholds(thresholds)
+                    (access)
+            yBins = d3.scaleLinear()
+                    .domain([0, d3.max(bins, d => d.length) / density.length])
+                    .range([height/4, 0])
+
+            // Give these new data to update line and histogram
             line
                 .datum(density)
                 .transition()
                 .duration(1000)
-            
+                .attr("fill", "#ff6d00")
+                .attr("fill-opacity", ".07")
+                .attr("stroke", "#ff6d00")
+                .attr("stroke-width", 2)
+                .attr("stroke-linejoin", "round")
+                    .attr("d",  d3.line()
+                    .curve(d3.curveBasis)
+                    .x(function(d) { return x(d[0]); })
+                    .y(function(d) { return y(d[1]); }));
 
+            hist
+                .data(bins)
+                .transition()
+                .duration(1000)
+                .attr("x", d => x(d.x0) + 1)
+                .attr("width", d => 3.2)
+                .attr("y", d => yBins(d.length / density.length))
+                .attr("height", d => yBins(0) - yBins(d.length / density.length));
         })
     }
 
     d3.json("../data/cities_final.json").then((data) => {
 
-        accessScore(data)
+        accessScore(data, initialWeights)
 
         console.log(data)  
         populateDropdown(data)
         
         initial_dataset = "Chicago"
         showData(data, initial_dataset)
-        updateWeights(sliderAL, data)
-        updateWeights(sliderC, data)
-        updateWeights(sliderED, data)
-        updateWeights(sliderFC, data)
-        updateWeights(sliderHWB, data)
-        updateWeights(sliderM, data)
-        updateWeights(sliderN, data)
+        updateWeights(sliderAL, data, initial_dataset)
+        updateWeights(sliderC, data, initial_dataset)
+        updateWeights(sliderED, data, initial_dataset)
+        updateWeights(sliderFC, data, initial_dataset)
+        updateWeights(sliderHWB, data, initial_dataset)
+        updateWeights(sliderM, data, initial_dataset)
+        updateWeights(sliderN, data, initial_dataset)
         // showData(data)
         // showData(data,tiles)
 
@@ -335,6 +410,7 @@
         var y = d3.scaleLinear()
                     .range([height/4, 0])
                     .domain([0, 7]);
+
         dist.append("g")
             .call(d3.axisLeft(y))
             .attr("id", "kdeyAxis"); 
@@ -600,8 +676,19 @@
         d3.select("#dropdown").on("change", function(d) {
         // recover the option that has been chosen
         var selectedOption = d3.select(this).property("value")
+        // re-initialize the weights
+        accessScore(data, initialWeights)
+        console.log(initialWeights)
+        resetSliders()
         // run the updateChart function with this selected option
         update(selectedOption)
+        updateWeights(sliderAL, data, selectedOption)
+        updateWeights(sliderC, data, selectedOption)
+        updateWeights(sliderED, data, selectedOption)
+        updateWeights(sliderFC, data, selectedOption)
+        updateWeights(sliderHWB, data, selectedOption)
+        updateWeights(sliderM, data, selectedOption)
+        updateWeights(sliderN, data, selectedOption)
     })
     
         svg.call(zoom);

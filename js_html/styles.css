@@ -92,6 +92,15 @@
 
     } */
 
+    .col-sm {
+        padding-left: 15px;
+        /* padding-top: 10px; */
+    }
+
+    .slider {
+        padding-bottom: 7px;
+    }
+
     #city {
         width: 200px;
         height: 30px;
