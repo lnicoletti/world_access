@@ -65,10 +65,11 @@
     // mWeight = 0.15
     // nWeight = 0.1
 
-    initialWeights = {alWeight: 0.1, cWeight: 0.15, 
-                      edWeight: 0.15, fcWeight: 0.15, 
-                      hwbWeight: 0.2, mWeight: 0.15, 
-                      nWeight: 0.1}
+    // have to start with all the same weights otherwise it wont work
+    initialWeights = {alWeight: 0.142857, cWeight: 0.142857, 
+                      edWeight: 0.142857, fcWeight: 0.142857, 
+                      hwbWeight: 0.142857, mWeight: 0.142857, 
+                      nWeight: 0.142857}
     
     // create variable to be updated on slider call
     newWeights = _.clone(initialWeights)
@@ -80,7 +81,7 @@
         .sliderBottom()
         .min(d3.min(dataWeights))
         .max(d3.max(dataWeights))
-        .step(0.05)
+        .step(0.001)
         .width(265)
         .tickValues(dataWeights)
         .default(initialWeight)
@@ -120,6 +121,9 @@
     var sliderM = makeSlider("#sliderM", initialWeights.mWeight)
     var sliderN = makeSlider("#sliderN", initialWeights.nWeight)
 
+    // put all sliders in array to be used in responsive function
+    var sliders = [sliderAL, sliderC, sliderED, sliderFC, sliderHWB, sliderM, sliderN]
+
     // function to reset the sliders
     function resetSliders() {
         sliderAL.value(initialWeights.alWeight)
@@ -138,46 +142,150 @@
             weightData.fcWeight*d.properties.food_choic_r + weightData.hwbWeight*d.properties.health_wel_r + 
             weightData.mWeight*d.properties.mobility_r + weightData.nWeight*d.properties.nightlife_r);
     }
+    // make weights responsive so that they always add up to 100%
+    function responsiveWeights(slider, weightUpdated, val) {
+         // make other sliders responsive so as to not go over or below 100%
+        // if slider was increased, decrease the other ones
+        // console.log(slider)
+        if (val>newWeights[weightUpdated]) {
+            // get weight increase difference
+            WeightIncrease = val - newWeights[weightUpdated]
+            console.log(WeightIncrease)
+            // update focus slider with new value
+            newWeights[weightUpdated] = val
+            // clone newWeights so as to not mess with the newWeights object
+            newWeightsTemp = _.clone(newWeights)
+            // remove updated weight from clone
+            delete newWeightsTemp[weightUpdated]
+            // decrease other sliders so as to not go over 100%
+            console.log(Object.keys(newWeightsTemp)[0])
+            newWeights[Object.keys(newWeightsTemp)[0]] = newWeights[Object.keys(newWeightsTemp)[0]] === 0?  0 : 
+                                                            newWeights[Object.keys(newWeightsTemp)[0]] - (WeightIncrease/6)
+            // update slider handle
+            sliders.filter(d=>d!=slider)[0].value(newWeights[Object.keys(newWeightsTemp)[0]])
+            newWeights[Object.keys(newWeightsTemp)[1]] = newWeights[Object.keys(newWeightsTemp)[1]] === 0?  0 : 
+                                                            newWeights[Object.keys(newWeightsTemp)[1]] - (WeightIncrease/6)
+            sliders.filter(d=>d!=slider)[1].value(newWeights[Object.keys(newWeightsTemp)[1]])
+            newWeights[Object.keys(newWeightsTemp)[2]] = newWeights[Object.keys(newWeightsTemp)[2]] === 0?  0 : 
+                                                            newWeights[Object.keys(newWeightsTemp)[2]] - (WeightIncrease/6)
+            sliders.filter(d=>d!=slider)[2].value(newWeights[Object.keys(newWeightsTemp)[2]])
+            newWeights[Object.keys(newWeightsTemp)[3]] = newWeights[Object.keys(newWeightsTemp)[3]] === 0?  0 : 
+                                                            newWeights[Object.keys(newWeightsTemp)[3]] - (WeightIncrease/6)
+            sliders.filter(d=>d!=slider)[3].value(newWeights[Object.keys(newWeightsTemp)[3]])
+            newWeights[Object.keys(newWeightsTemp)[4]] = newWeights[Object.keys(newWeightsTemp)[4]] === 0?  0 : 
+                                                            newWeights[Object.keys(newWeightsTemp)[4]] - (WeightIncrease/6)
+            sliders.filter(d=>d!=slider)[4].value(newWeights[Object.keys(newWeightsTemp)[4]])
+            newWeights[Object.keys(newWeightsTemp)[5]] = newWeights[Object.keys(newWeightsTemp)[5]] === 0?  0 : 
+                                                            newWeights[Object.keys(newWeightsTemp)[5]] - (WeightIncrease/6)
+            sliders.filter(d=>d!=slider)[5].value(newWeights[Object.keys(newWeightsTemp)[5]])
+        // if slider was decreased, increase the other ones
+        } else if (val<newWeights.weightUpdated) {
+            // get weight decrease difference
+            WeightDecrease = newWeights.weightUpdated - val
+            console.log(WeightDecrease)
+            // update focus slider with new value
+            newWeights.weightUpdated = val
+            // clone newWeights so as to not mess with the newWeights object
+            newWeightsTemp = _.clone(newWeights)
+            // remove updated weight from clone
+            delete newWeightsTemp.weightUpdated
+            // decrease other sliders so as to not go over 100%
+            newWeights[Object.keys(newWeightsTemp)[0]] = newWeights[Object.keys(newWeightsTemp)[0]] + (WeightDecrease/6)
+            // update slider handle
+            sliders.filter(d=>d!=slider)[0].value(newWeights[Object.keys(newWeightsTemp)[0]])
+            newWeights[Object.keys(newWeightsTemp)[1]] = newWeights[Object.keys(newWeightsTemp)[1]] + (WeightDecrease/6)
+            sliders.filter(d=>d!=slider)[1].value(newWeights[Object.keys(newWeightsTemp)[1]])
+            newWeights[Object.keys(newWeightsTemp)[2]] = newWeights[Object.keys(newWeightsTemp)[2]] + (WeightDecrease/6)
+            sliders.filter(d=>d!=slider)[2].value(newWeights[Object.keys(newWeightsTemp)[2]])
+            newWeights[Object.keys(newWeightsTemp)[3]] = newWeights[Object.keys(newWeightsTemp)[3]] + (WeightDecrease/6)
+            sliders.filter(d=>d!=slider)[3].value(newWeights[Object.keys(newWeightsTemp)[3]])
+            newWeights[Object.keys(newWeightsTemp)[4]] = newWeights[Object.keys(newWeightsTemp)[1]] + (WeightDecrease/6)
+            sliders.filter(d=>d!=slider)[4].value(newWeights[Object.keys(newWeightsTemp)[4]])
+            newWeights[Object.keys(newWeightsTemp)[5]] = newWeights[Object.keys(newWeightsTemp)[1]] + (WeightDecrease/6)
+            sliders.filter(d=>d!=slider)[5].value(newWeights[Object.keys(newWeightsTemp)[5]])
+        }
+    }
 
     // update map and histogram/kde with the new weights
     function updateWeights(slider, data, selected_city) {
         slider.on("onchange", val => {
-        //     if (sliderAL.value + sliderC.value + sliderED.value + sliderFC.value + sliderHWB.value + sliderM.value + sliderN.value <= 1) {
-        //         if (slider===sliderAL) {
-        //             newWeights.alWeight = val
-        //         } else if (slider===sliderC) {
-        //             newWeights.cWeight = val
-        //         } else if (slider===sliderED) {
-        //             newWeights.edWeight = val
-        //         } else if (slider===sliderFC) {
-        //             newWeights.fcWeight = val
-        //         } else if (slider===sliderHWB) {
-        //             newWeights.hwbWeight = val
-        //         } else if (slider===sliderM) {
-        //             newWeights.mWeight = val
-        //         } else if (slider===sliderN) {
-        //             newWeights.nWeight = val
-        //         }
-
-        //     } else {
-        //         slider.attr("disable")
-        //     }
             if (slider===sliderAL) {
-                newWeights.alWeight = val
+
+                // make other sliders responsive so as to not go over or below 100%
+                // if slider was increased, decrease the other ones
+                if (val>newWeights.alWeight) {
+                    // get weight increase difference
+                    alWeightIncrease = val - newWeights.alWeight
+                    console.log(alWeightIncrease)
+                    // update focus slider with new value
+                    newWeights.alWeight = val
+                    // decrease other sliders so as to not go over 100%
+                    newWeights.cWeight = newWeights.cWeight === 0?  0 : newWeights.cWeight - (alWeightIncrease/6)
+                    // update slider handle
+                    sliderC.value(newWeights.cWeight)
+                    newWeights.edWeight = newWeights.edWeight === 0?  0 : newWeights.edWeight - (alWeightIncrease/6)
+                    sliderED.value(newWeights.edWeight)
+                    newWeights.fcWeight = newWeights.fcWeight === 0?  0 : newWeights.fcWeight - (alWeightIncrease/6)
+                    sliderFC.value(newWeights.fcWeight)
+                    newWeights.hwbWeight = newWeights.hwbWeight === 0?  0 : newWeights.hwbWeight - (alWeightIncrease/6)
+                    sliderHWB.value(newWeights.hwbWeight)
+                    newWeights.mWeight = newWeights.mWeight === 0?  0 : newWeights.mWeight - (alWeightIncrease/6)
+                    sliderM.value(newWeights.mWeight)
+                    newWeights.nWeight = newWeights.nWeight === 0?  0 : newWeights.nWeight - (alWeightIncrease/6)
+                    sliderN.value(newWeights.nWeight)
+                // if slider was decreased, increase the other ones
+                } else if (val<newWeights.alWeight) {
+                    // get weight decrease difference
+                    alWeightDecrease = newWeights.alWeight - val
+                    console.log(alWeightDecrease)
+                    // update focus slider with new value
+                    newWeights.alWeight = val
+                    // decrease other sliders so as to not go over 100%
+                    newWeights.cWeight = newWeights.cWeight + (alWeightDecrease/6)
+                    // update slider handle
+                    sliderC.value(newWeights.cWeight)
+                    newWeights.edWeight = newWeights.edWeight + (alWeightDecrease/6)
+                    sliderED.value(newWeights.edWeight)
+                    newWeights.fcWeight = newWeights.fcWeight + (alWeightDecrease/6)
+                    sliderFC.value(newWeights.fcWeight)
+                    newWeights.hwbWeight = newWeights.hwbWeight + (alWeightDecrease/6)
+                    sliderHWB.value(newWeights.hwbWeight)
+                    newWeights.mWeight = newWeights.mWeight + (alWeightDecrease/6)
+                    sliderM.value(newWeights.mWeight)
+                    newWeights.nWeight = newWeights.nWeight + (alWeightDecrease/6)
+                    sliderN.value(newWeights.nWeight)
+                }
+                
+                // responsiveWeights(sliderAL, "alWeight", val)
+
             } else if (slider===sliderC) {
-                newWeights.cWeight = val
+                responsiveWeights(sliderC, "cWeight", val)
             } else if (slider===sliderED) {
-                newWeights.edWeight = val
+                responsiveWeights(sliderED, "edWeight", val)
             } else if (slider===sliderFC) {
-                newWeights.fcWeight = val
+                responsiveWeights(sliderFC, "fcWeight", val)
             } else if (slider===sliderHWB) {
-                newWeights.hwbWeight = val
+                responsiveWeights(sliderHWB, "hwbWeight", val)
             } else if (slider===sliderM) {
-                newWeights.mWeight = val
+                responsiveWeights(sliderM, "mWeight", val)
             } else if (slider===sliderN) {
-                newWeights.nWeight = val
+                responsiveWeights(sliderN, "nWeight", val)
             }
-            console.log(newWeights)
+
+            // } else if (slider===sliderC) {
+            //     newWeights.cWeight = val
+            // } else if (slider===sliderED) {
+            //     newWeights.edWeight = val
+            // } else if (slider===sliderFC) {
+            //     newWeights.fcWeight = val
+            // } else if (slider===sliderHWB) {
+            //     newWeights.hwbWeight = val
+            // } else if (slider===sliderM) {
+            //     newWeights.mWeight = val
+            // } else if (slider===sliderN) {
+            //     newWeights.nWeight = val
+            // }
+            // console.log(newWeights)
             accessScore(data, newWeights)
             // showData(data, initial_dataset)
 
