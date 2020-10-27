@@ -333,8 +333,8 @@
         let image = svg.selectAll("image")
             .data(tiles)
             .enter().append("image")
-            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-            // .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/dark_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            // .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/dark_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
             // .attr("xlink:href", function(d){ return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
             // .attr("xlink:href", function(d){ return "https://tiles.stadiamaps.com/tiles/alidade_smooth/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
             .attr("x", function(d) { return (d[0] + tiles.translate[0]) * tiles.scale; })
@@ -391,7 +391,7 @@
                     .append("g")
                         .attr("id", "histogram")
                         .attr("transform",
-                        "translate(" + margin.left*2 + "," + 360 + ")")
+                        "translate(" + margin.left*2 + "," + height/1.28 + ")")
 
         // add the x Axis
         maxAccess = d3.max(access)
@@ -404,7 +404,7 @@
             .call(d3.axisBottom(x).tickSize(0).ticks(5))
             .attr("id", "kdexAxis")
             .style("font-weight", "bold")
-            .style("fill", "grey")
+            // .style("fill", "grey")
         
         // add the y Axis
         var y = d3.scaleLinear()
@@ -435,9 +435,9 @@
 
         // draw the histogram
         hist = dist.append("g")
-            // .attr("class", "kdeBins")
+            .attr("class", "kdeBins")
             // .attr("fill", "none")
-            .attr("fill", "grey")
+            // .attr("fill", "grey")
             // .attr("stroke", "darkgrey")
             .selectAll("rect")
             .data(bins)
@@ -493,6 +493,7 @@
         console.log(yBins(d3.median(cities, d => +d.properties.accessibil_sc).length / density.length))
         // add median accessibility text
         distText = dist.append("text")
+            .attr("id", "medianBlurb")
             .attr("x", x(d3.median(cities, d => +d.properties.accessibil_sc))-20)
             .attr("y", -45) // -85 previously
             // .attr("y", yBins(d3.median(cities, d => +d.properties.accessibil_sc) / density.length))
@@ -617,7 +618,9 @@
             // .transition()
             // .duration(1000)
             .enter().append("image")
-            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            // .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/light_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            .attr("xlink:href", function(d){ return "https://cartodb-basemaps-" + "abcd"[d[1] % 4] + ".global.ssl.fastly.net/dark_all/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+            // .attr("xlink:href", function(d){ return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
             .attr("x", function(d) { return (d[0] + tiles.translate[0]) * tiles.scale; })
             .attr("y", function(d) { return (d[1] + tiles.translate[1]) * tiles.scale; })
             .attr("width", tiles.scale)
@@ -768,24 +771,9 @@
 
         d3.selectAll("#barchart")
         .remove("#barchart")
-        // d3.select("#scores")
-        // .append("html")
-        // .html("Mobility Score: " + Math.round(+d.properties.mobility_r*100) + "%<br>")
-        // .append("html")
-        // .html("Active Living Score: " + Math.round(+d.properties.active_liv_r *100) + "%<br>")
-        // .append("html")
-        // .html("Entertainment Score: " + Math.round(+d.properties.nightlife_r*100) + "%<br>")
-        // .append("html")
-        // .html("Health and Wellbeing Score: " + Math.round(+d.properties.health_wel_r*100) + "%<br>")
-        // .append("html")
-        // .html("Food Choices Score: " + Math.round(+d.properties.food_choic_r*100) + "%<br>")
-        // .append("html")
-        // .html("Community Space Score: " + Math.round(+d.properties.community_r*100) + "%<br>")
-        // .append("html")
-        // .html("Education Score: " + Math.round(+d.properties.education_r*100) + "%<br>")
 
         // set the dimensions and margins of the graph
-        var margin = {top: 5, right: 65, bottom: 25, left: 150},
+        var margin = {top: 40, right: 65, bottom: 15, left: 150},
             width = 390 - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
 
@@ -838,10 +826,10 @@
             .domain(radarData.map(function(d) { return d.category; }))
             .padding(.1);
         svg.append("g")
-            .attr("id", "yAxis")
+            .attr("id", "baryAxis")
             .call(d3.axisLeft(y))
             // .attr("font-size", "20px") 
-            .attr("font-weight", "bold")
+            // .attr("font-weight", "bold")
 
         //Bars
         svg.selectAll("myRect")
@@ -852,9 +840,10 @@
             .attr("y", function(d) { return y(d.category); })
             .attr("width", function(d) { return x(+d.value); })
             .attr("height", y.bandwidth()-5)
-            // .attr("fill", "#ff6d00")
-            .attr("fill", "none")
-            .attr("stroke", "grey")
+            .attr("fill", "#ff6d00")
+            // .attr("fill", "orange")
+            // .attr("stroke", "grey")
+            .attr("stroke", "none")
             .attr("stroke-width", "1.2px")
             .append("text")
             .text(function(d) { return x(+d.value);})
@@ -862,7 +851,8 @@
         //data labels
         svg.selectAll("text.lab").data(radarData)
             .enter().append("text")
-            .attr('fill','black')
+            .attr("class", "barLabels")
+            // .attr('fill','black')
             .attr("text-anchor", "right")
             .attr("x", function(d) { return x(+d.value) + 5; })
             .attr("y", function(d) { return y(d.category)+20; })
