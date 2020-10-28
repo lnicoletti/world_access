@@ -4,17 +4,6 @@
         width = 800 - margin.left - margin.right, // 830
         height = 650 - margin.top - margin.bottom; // 685
     
-    // // populate drop-down
-    // d3.select("#dropdown")
-    //       .selectAll("option")
-    //       .data(dropdown_options)
-    //       .enter()
-    //       .append("option")
-    //       .attr("value", function(option) { return option.value; })
-    //       .text(function(option) { return option.text; });
-
-    // initial dataset on load
-    // var selected_dataset = "Chicago";
 
     // let store = {}
 
@@ -75,43 +64,6 @@
     newWeights = _.clone(initialWeights)
     console.log(newWeights)
 
-    function makeSlider(sliderId, initialWeight){
-        // Make the slider
-        var sliderWeights = d3
-        .sliderBottom()
-        .min(d3.min(dataWeights))
-        .max(d3.max(dataWeights))
-        .step(0.001)
-        .width(265)
-        .tickValues(dataWeights)
-        .default(initialWeight)
-        // .on('onchange', val => {
-        //   d3.select('p#value').text(d3.timeFormat('%Y')(val));
-        // console.log(val)});
-
-        var weights = d3
-        .selectAll(sliderId)
-        .append("left")
-        .append('svg')
-        .attr('width', 300)
-        .attr('height', 50)
-        .append('g')
-        .attr('transform', 'translate(15,10)')
-
-        // var cWeights = d3
-        // .selectAll('#sliderC')
-        // .append("center")
-        // .append('svg')
-        // .attr('width', 300)
-        // .attr('height', 50)
-        // .append('g')
-        // .attr('transform', 'translate(15,10)')
-
-        // alWeights.call(sliderWeights);
-        weights.call(sliderWeights)
-        return sliderWeights
-    }
-
     // create a slider for each category
     var sliderAL = makeSlider("#sliderAL", initialWeights.alWeight)
     var sliderC = makeSlider("#sliderC", initialWeights.cWeight)
@@ -124,224 +76,10 @@
     // put all sliders in array to be used in responsive function
     var sliders = [sliderAL, sliderC, sliderED, sliderFC, sliderHWB, sliderM, sliderN]
 
-    // function to reset the sliders
-    function resetSliders() {
-        sliderAL.value(initialWeights.alWeight)
-        sliderC.value(initialWeights.cWeight)
-        sliderED.value(initialWeights.edWeight)
-        sliderFC.value(initialWeights.fcWeight)
-        sliderHWB.value(initialWeights.hwbWeight)
-        sliderM.value(initialWeights.mWeight)
-        sliderN.value(initialWeights.nWeight)
-    }
-
-    // Calculate new accessibility score
-    function accessScore(data, weightData) {
-        data.features.forEach(d=> d.properties.accessibil_sc = weightData.alWeight*d.properties.active_liv_r + 
-            weightData.cWeight*d.properties.community_r + weightData.edWeight*d.properties.education_r + 
-            weightData.fcWeight*d.properties.food_choic_r + weightData.hwbWeight*d.properties.health_wel_r + 
-            weightData.mWeight*d.properties.mobility_r + weightData.nWeight*d.properties.nightlife_r);
-    }
-    // make weights responsive so that they always add up to 100%
-    function responsiveWeights(slider, weightUpdated, val) {
-         // make other sliders responsive so as to not go over or below 100%
-        // if slider was increased, decrease the other ones
-        // console.log(slider)
-        if (val>newWeights[weightUpdated]) {
-            // get weight increase difference
-            WeightIncrease = val - newWeights[weightUpdated]
-            console.log(WeightIncrease)
-            // update focus slider with new value
-            newWeights[weightUpdated] = val
-            // clone newWeights so as to not mess with the newWeights object
-            newWeightsTemp = _.clone(newWeights)
-            // remove updated weight from clone
-            delete newWeightsTemp[weightUpdated]
-            // decrease other sliders so as to not go over 100%
-            console.log(Object.keys(newWeightsTemp)[0])
-            newWeights[Object.keys(newWeightsTemp)[0]] = newWeights[Object.keys(newWeightsTemp)[0]] === 0?  0 : 
-                                                            newWeights[Object.keys(newWeightsTemp)[0]] - (WeightIncrease/6)
-            // update slider handle
-            sliders.filter(d=>d!=slider)[0].value(newWeights[Object.keys(newWeightsTemp)[0]])
-            newWeights[Object.keys(newWeightsTemp)[1]] = newWeights[Object.keys(newWeightsTemp)[1]] === 0?  0 : 
-                                                            newWeights[Object.keys(newWeightsTemp)[1]] - (WeightIncrease/6)
-            sliders.filter(d=>d!=slider)[1].value(newWeights[Object.keys(newWeightsTemp)[1]])
-            newWeights[Object.keys(newWeightsTemp)[2]] = newWeights[Object.keys(newWeightsTemp)[2]] === 0?  0 : 
-                                                            newWeights[Object.keys(newWeightsTemp)[2]] - (WeightIncrease/6)
-            sliders.filter(d=>d!=slider)[2].value(newWeights[Object.keys(newWeightsTemp)[2]])
-            newWeights[Object.keys(newWeightsTemp)[3]] = newWeights[Object.keys(newWeightsTemp)[3]] === 0?  0 : 
-                                                            newWeights[Object.keys(newWeightsTemp)[3]] - (WeightIncrease/6)
-            sliders.filter(d=>d!=slider)[3].value(newWeights[Object.keys(newWeightsTemp)[3]])
-            newWeights[Object.keys(newWeightsTemp)[4]] = newWeights[Object.keys(newWeightsTemp)[4]] === 0?  0 : 
-                                                            newWeights[Object.keys(newWeightsTemp)[4]] - (WeightIncrease/6)
-            sliders.filter(d=>d!=slider)[4].value(newWeights[Object.keys(newWeightsTemp)[4]])
-            newWeights[Object.keys(newWeightsTemp)[5]] = newWeights[Object.keys(newWeightsTemp)[5]] === 0?  0 : 
-                                                            newWeights[Object.keys(newWeightsTemp)[5]] - (WeightIncrease/6)
-            sliders.filter(d=>d!=slider)[5].value(newWeights[Object.keys(newWeightsTemp)[5]])
-        // if slider was decreased, increase the other ones
-        } else if (val<newWeights.weightUpdated) {
-            // get weight decrease difference
-            WeightDecrease = newWeights.weightUpdated - val
-            console.log(WeightDecrease)
-            // update focus slider with new value
-            newWeights.weightUpdated = val
-            // clone newWeights so as to not mess with the newWeights object
-            newWeightsTemp = _.clone(newWeights)
-            // remove updated weight from clone
-            delete newWeightsTemp.weightUpdated
-            // decrease other sliders so as to not go over 100%
-            newWeights[Object.keys(newWeightsTemp)[0]] = newWeights[Object.keys(newWeightsTemp)[0]] + (WeightDecrease/6)
-            // update slider handle
-            sliders.filter(d=>d!=slider)[0].value(newWeights[Object.keys(newWeightsTemp)[0]])
-            newWeights[Object.keys(newWeightsTemp)[1]] = newWeights[Object.keys(newWeightsTemp)[1]] + (WeightDecrease/6)
-            sliders.filter(d=>d!=slider)[1].value(newWeights[Object.keys(newWeightsTemp)[1]])
-            newWeights[Object.keys(newWeightsTemp)[2]] = newWeights[Object.keys(newWeightsTemp)[2]] + (WeightDecrease/6)
-            sliders.filter(d=>d!=slider)[2].value(newWeights[Object.keys(newWeightsTemp)[2]])
-            newWeights[Object.keys(newWeightsTemp)[3]] = newWeights[Object.keys(newWeightsTemp)[3]] + (WeightDecrease/6)
-            sliders.filter(d=>d!=slider)[3].value(newWeights[Object.keys(newWeightsTemp)[3]])
-            newWeights[Object.keys(newWeightsTemp)[4]] = newWeights[Object.keys(newWeightsTemp)[1]] + (WeightDecrease/6)
-            sliders.filter(d=>d!=slider)[4].value(newWeights[Object.keys(newWeightsTemp)[4]])
-            newWeights[Object.keys(newWeightsTemp)[5]] = newWeights[Object.keys(newWeightsTemp)[1]] + (WeightDecrease/6)
-            sliders.filter(d=>d!=slider)[5].value(newWeights[Object.keys(newWeightsTemp)[5]])
-        }
-    }
-
-    // update map and histogram/kde with the new weights
-    function updateWeights(slider, data, selected_city) {
-        slider.on("onchange", val => {
-            if (slider===sliderAL) {
-
-                // make other sliders responsive so as to not go over or below 100%
-                // if slider was increased, decrease the other ones
-                if (val>newWeights.alWeight) {
-                    // get weight increase difference
-                    alWeightIncrease = val - newWeights.alWeight
-                    console.log(alWeightIncrease)
-                    // update focus slider with new value
-                    newWeights.alWeight = val
-                    // decrease other sliders so as to not go over 100%
-                    newWeights.cWeight = newWeights.cWeight === 0?  0 : newWeights.cWeight - (alWeightIncrease/6)
-                    // update slider handle
-                    sliderC.value(newWeights.cWeight)
-                    newWeights.edWeight = newWeights.edWeight === 0?  0 : newWeights.edWeight - (alWeightIncrease/6)
-                    sliderED.value(newWeights.edWeight)
-                    newWeights.fcWeight = newWeights.fcWeight === 0?  0 : newWeights.fcWeight - (alWeightIncrease/6)
-                    sliderFC.value(newWeights.fcWeight)
-                    newWeights.hwbWeight = newWeights.hwbWeight === 0?  0 : newWeights.hwbWeight - (alWeightIncrease/6)
-                    sliderHWB.value(newWeights.hwbWeight)
-                    newWeights.mWeight = newWeights.mWeight === 0?  0 : newWeights.mWeight - (alWeightIncrease/6)
-                    sliderM.value(newWeights.mWeight)
-                    newWeights.nWeight = newWeights.nWeight === 0?  0 : newWeights.nWeight - (alWeightIncrease/6)
-                    sliderN.value(newWeights.nWeight)
-                // if slider was decreased, increase the other ones
-                } else if (val<newWeights.alWeight) {
-                    // get weight decrease difference
-                    alWeightDecrease = newWeights.alWeight - val
-                    console.log(alWeightDecrease)
-                    // update focus slider with new value
-                    newWeights.alWeight = val
-                    // decrease other sliders so as to not go over 100%
-                    newWeights.cWeight = newWeights.cWeight + (alWeightDecrease/6)
-                    // update slider handle
-                    sliderC.value(newWeights.cWeight)
-                    newWeights.edWeight = newWeights.edWeight + (alWeightDecrease/6)
-                    sliderED.value(newWeights.edWeight)
-                    newWeights.fcWeight = newWeights.fcWeight + (alWeightDecrease/6)
-                    sliderFC.value(newWeights.fcWeight)
-                    newWeights.hwbWeight = newWeights.hwbWeight + (alWeightDecrease/6)
-                    sliderHWB.value(newWeights.hwbWeight)
-                    newWeights.mWeight = newWeights.mWeight + (alWeightDecrease/6)
-                    sliderM.value(newWeights.mWeight)
-                    newWeights.nWeight = newWeights.nWeight + (alWeightDecrease/6)
-                    sliderN.value(newWeights.nWeight)
-                }
-                
-                // responsiveWeights(sliderAL, "alWeight", val)
-
-            } else if (slider===sliderC) {
-                responsiveWeights(sliderC, "cWeight", val)
-            } else if (slider===sliderED) {
-                responsiveWeights(sliderED, "edWeight", val)
-            } else if (slider===sliderFC) {
-                responsiveWeights(sliderFC, "fcWeight", val)
-            } else if (slider===sliderHWB) {
-                responsiveWeights(sliderHWB, "hwbWeight", val)
-            } else if (slider===sliderM) {
-                responsiveWeights(sliderM, "mWeight", val)
-            } else if (slider===sliderN) {
-                responsiveWeights(sliderN, "nWeight", val)
-            }
-
-            // } else if (slider===sliderC) {
-            //     newWeights.cWeight = val
-            // } else if (slider===sliderED) {
-            //     newWeights.edWeight = val
-            // } else if (slider===sliderFC) {
-            //     newWeights.fcWeight = val
-            // } else if (slider===sliderHWB) {
-            //     newWeights.hwbWeight = val
-            // } else if (slider===sliderM) {
-            //     newWeights.mWeight = val
-            // } else if (slider===sliderN) {
-            //     newWeights.nWeight = val
-            // }
-            // console.log(newWeights)
-            accessScore(data, newWeights)
-            // showData(data, initial_dataset)
-
-            // update the map
-            cities = data.features.filter(function(d){return d.properties.city == selected_city })
-            cScale = d3.scaleSequentialQuantile([...cities.map(d=>d.properties.accessibil_sc)], d3.interpolateInferno)
-            plot
-                .data(cities)
-                .attr("fill", d => cScale(+d.properties.accessibil_sc)) 
-            // update the kde and histogram
-            access = cities.map(function(d){ return +d.properties.accessibil_sc; }) 
-            x = d3.scaleLinear()
-                        .domain([0, d3.max(access)])
-                        .range([0, width/1.5]);
-            y = d3.scaleLinear()
-                        .range([height/4, 0])
-                        .domain([0, 7]);
-
-            kde = kernelDensityEstimator(kernelEpanechnikov(0.007), x.ticks(90))
-            density =  kde(access)
-             // new bins for histogram
-            bins = d3.histogram()
-                    .domain(x.domain())
-                    .thresholds(thresholds)
-                    (access)
-            yBins = d3.scaleLinear()
-                    .domain([0, d3.max(bins, d => d.length) / density.length])
-                    .range([height/4, 0])
-
-            // Give these new data to update line and histogram
-            line
-                .datum(density)
-                .transition()
-                .duration(1000)
-                .attr("fill", "#ff6d00")
-                .attr("fill-opacity", ".07")
-                .attr("stroke", "#ff6d00")
-                .attr("stroke-width", 2)
-                .attr("stroke-linejoin", "round")
-                    .attr("d",  d3.line()
-                    .curve(d3.curveBasis)
-                    .x(function(d) { return x(d[0]); })
-                    .y(function(d) { return y(d[1]); }));
-
-            hist
-                .data(bins)
-                .transition()
-                .duration(1000)
-                .attr("x", d => x(d.x0) + 1)
-                .attr("width", d => 3.2)
-                .attr("y", d => yBins(d.length / density.length))
-                .attr("height", d => yBins(0) - yBins(d.length / density.length));
-        })
-    }
 
     d3.json("../data/cities_final.json").then((data) => {
+    // d3.json("https://cdn.jsdelivr.net/gh/lnicoletti/world_access@master/hosted_data/cities_final.json").then((data) => {
+
 
         accessScore(data, initialWeights)
 
@@ -350,13 +88,13 @@
         
         initial_dataset = "Chicago"
         showData(data, initial_dataset)
-        updateWeights(sliderAL, data, initial_dataset)
-        updateWeights(sliderC, data, initial_dataset)
-        updateWeights(sliderED, data, initial_dataset)
-        updateWeights(sliderFC, data, initial_dataset)
-        updateWeights(sliderHWB, data, initial_dataset)
-        updateWeights(sliderM, data, initial_dataset)
-        updateWeights(sliderN, data, initial_dataset)
+        updateWeights(sliderAL, data, initial_dataset, status = "active")
+        updateWeights(sliderC, data, initial_dataset, status = "active")
+        updateWeights(sliderED, data, initial_dataset, status = "active")
+        updateWeights(sliderFC, data, initial_dataset, status = "active")
+        updateWeights(sliderHWB, data, initial_dataset, status = "active")
+        updateWeights(sliderM, data, initial_dataset, status = "active")
+        updateWeights(sliderN, data, initial_dataset, status = "active")
         // showData(data)
         // showData(data,tiles)
 
@@ -487,6 +225,22 @@
                     .on("mouseout.opall", function() { d3.selectAll("path").attr("opacity", "0.9");})
                     .on("mouseover.bar", function(d) { displayData(d); })
                     .on("mouseout.bar", hideData);
+
+            svg.append("g")
+                .attr("class", "legendQuant")
+                .attr("transform", "translate(500,20)");
+                  
+            var legendQuantize = d3.legendColor()
+                .title("Accessibility")  
+                .labelFormat(d3.format(".2f"))
+                .useClass(true)
+                .orient('horizontal')
+              .scale(cScale);
+
+            svg.select(".legendQuant")
+            .call(legendQuantize);
+
+              
 
         
 
@@ -790,9 +544,22 @@
         // re-initialize the weights
         accessScore(data, initialWeights)
         console.log(initialWeights)
-        resetSliders()
-        // run the updateChart function with this selected option
+        // make function inactive to prevent it from interacting with resetSliders
+        updateWeights(sliderAL, data, selectedOption, status=0)
+        updateWeights(sliderC, data, selectedOption, status=0)
+        updateWeights(sliderED, data, selectedOption, status=0)
+        updateWeights(sliderFC, data, selectedOption, status=0)
+        updateWeights(sliderHWB, data, selectedOption, status=0)
+        updateWeights(sliderM, data, selectedOption, status=0)
+        updateWeights(sliderN, data, selectedOption, status=0)
+        
+        // reset newWeights variable to forget previous status
+        newWeights = _.clone(initialWeights)
+        // reset all sliders to equal weights
+        resetSliders(initialWeights)
+        // run the update function with this selected option
         update(selectedOption)
+        // re-initialize updateWeights 
         updateWeights(sliderAL, data, selectedOption)
         updateWeights(sliderC, data, selectedOption)
         updateWeights(sliderED, data, selectedOption)
