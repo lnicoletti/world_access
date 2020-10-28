@@ -226,21 +226,29 @@
                     .on("mouseover.bar", function(d) { displayData(d); })
                     .on("mouseout.bar", hideData);
 
-            svg.append("g")
+            g = svg.append("g")
                 .attr("class", "legendQuant")
-                .attr("transform", "translate(500,20)");
+                .attr("transform", "translate(0,-10)");
                   
-            var legendQuantize = d3.legendColor()
-                .title("Accessibility")  
-                .labelFormat(d3.format(".2f"))
-                .useClass(true)
-                .orient('horizontal')
-              .scale(cScale);
+            // var legendQuantize = d3.legendColor()
+            //     .title("Accessibility")  
+            //     .labelFormat(d3.format(".2f"))
+            //     .useClass(true)
+            //     .orient('horizontal')
+            //   .scale(cScale);
 
-            svg.select(".legendQuant")
-            .call(legendQuantize);
+            // svg.select(".legendQuant")
+            //     .call(legendQuantize);
 
-              
+            var rects = g.selectAll("rect")
+                .data(d3.range(0,1, 0.03))
+                .enter()
+                .append("rect")
+                .attr("width",15)
+                .attr("height", 10)
+                .attr("y", function(d,i) { return Math.floor(i / 100) * 20 + 10 })
+                .attr("x", function(d,i) { return i % 100 * 15 })
+                .attr("fill", function(d) { return cScale(d); })
 
         
 
