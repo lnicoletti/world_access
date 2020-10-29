@@ -76,7 +76,6 @@
     // put all sliders in array to be used in responsive function
     var sliders = [sliderAL, sliderC, sliderED, sliderFC, sliderHWB, sliderM, sliderN]
 
-
     d3.json("../data/cities_final.json").then((data) => {
     // d3.json("https://cdn.jsdelivr.net/gh/lnicoletti/world_access@master/hosted_data/cities_final.json").then((data) => {
 
@@ -264,7 +263,7 @@
                         "translate(" + margin.left*2 + "," + height/1.28 + ")")
 
         // add the x Axis
-        maxAccess = d3.max(access)
+        maxAccess = d3.max(access)+0.019
         var x = d3.scaleLinear()
                     .domain([0, maxAccess])
                     .range([0, width/1.5]);
@@ -364,8 +363,8 @@
         // add median accessibility text
         distText = dist.append("text")
             .attr("id", "medianBlurb")
-            .attr("x", x(d3.median(cities, d => +d.properties.accessibil_sc))-20)
-            .attr("y", -45) // -85 previously
+            .attr("x", x(d3.median(cities, d => +d.properties.accessibil_sc))-70)
+            .attr("y", -55) // -85 previously
             // .attr("y", yBins(d3.median(cities, d => +d.properties.accessibil_sc) / density.length))
             .style("text-anchor", "middle")
             // .style("font-size", "12px")
@@ -467,8 +466,8 @@
         .data(cities)
             // .transition()
             // .duration(1000)
-            .attr("x", x(d3.median(cities, d => +d.properties.accessibil_sc))-20)
-            .attr("y", -45) // -85 previously
+            .attr("x", x(d3.median(cities, d => +d.properties.accessibil_sc))-70)
+            .attr("y", -55) // -85 previously
             .style("text-anchor", "middle")
             // .style("font-size", "12px")
             .style("font", "14px Arial")
