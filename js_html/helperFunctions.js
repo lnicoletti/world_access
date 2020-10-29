@@ -150,6 +150,19 @@ function accessScore(data, weightData) {
                         sliderM.value(newWeights.mWeight)
                         newWeights.nWeight = newWeights.nWeight === 0?  0 : newWeights.nWeight - (alWeightIncrease/6)
                         sliderN.value(newWeights.nWeight)
+
+                        // newWeights.cWeight = newWeights.cWeight === 0?  0 : newWeights.cWeight - (alWeightIncrease*newWeights.cWeight*1.2)
+                        // // update slider handle
+                        // sliderC.value(newWeights.cWeight)
+                        // newWeights.edWeight = newWeights.edWeight === 0?  0 : newWeights.edWeight - (alWeightIncrease*newWeights.edWeight*1.2)
+                        // sliderED.value(newWeights.edWeight)
+                        // newWeights.fcWeight = newWeights.fcWeight === 0?  0 : newWeights.fcWeight - (alWeightIncrease*newWeights.fcWeight*1.2)
+                        // sliderFC.value(newWeights.fcWeight)
+                        // newWeights.hwbWeight = newWeights.hwbWeight === 0?  0 : newWeights.hwbWeight - (alWeightIncrease*newWeights.hwbWeight*1.2)
+                        // sliderHWB.value(newWeights.hwbWeight)
+                        // newWeights.mWeight = newWeights.mWeight === 0?  0 : newWeights.mWeight - (alWeightIncrease*newWeights.mWeight*1.2)
+                        // sliderM.value(newWeights.mWeight)
+                        // newWeights.nWeight = newWeights.nWeight === 0?  0 : newWeights.nWeight - (alWeightIncrease*newWeights.nWeight*1.2)
                     // if slider was decreased, increase the other ones
                     } else if (val<newWeights.alWeight) {
                         // get weight decrease difference

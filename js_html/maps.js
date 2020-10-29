@@ -225,29 +225,49 @@
                     .on("mouseover.bar", function(d) { displayData(d); })
                     .on("mouseout.bar", hideData);
 
-            g = svg.append("g")
-                .attr("class", "legendQuant")
-                .attr("transform", "translate(0,-10)");
+            // g = svg.append("g")
+            //     .attr("class", "legendQuant")
+            //     // .attr("transform", "translate(700,-10)");
+            //     .attr("transform", "translate(600,100)");
+
                   
             // var legendQuantize = d3.legendColor()
             //     .title("Accessibility")  
-            //     .labelFormat(d3.format(".2f"))
+            //     .labelFormat(d3.format(".3n"))
             //     .useClass(true)
-            //     .orient('horizontal')
+            //     .orient('vertical')
             //   .scale(cScale);
 
+            // var thresholdScale = d3.scaleQuantile()
+            //     .domain(cities.map(d=>d.properties.accessibil_sc))
+            //     .range(d3.interpolateInferno(cities.map(d=>d.properties.accessibil_sc))
+            //     .map(function(i) { return "q" + i + "-9"}));
+                // .range(d3.range(10)
+                // // .map(d3.interpolateInferno));
+                // .map(function(i) { return "q" + i + "-9"}));
+
+                // console.log(d3.interpolateInferno(cities.map(d=>d.properties.accessibil_sc)))
+
+                // var legend = d3.legendColor()
+                //     .labelFormat(d3.format(".2f"))
+                //     .labels(d3.legendHelpers.thresholdLabels)
+                //     .useClass(true)
+                //     .scale(thresholdScale)
+
+            // svg.select(".legendQuant")
+            //         .call(legend);
             // svg.select(".legendQuant")
             //     .call(legendQuantize);
 
-            var rects = g.selectAll("rect")
-                .data(d3.range(0,1, 0.03))
-                .enter()
-                .append("rect")
-                .attr("width",15)
-                .attr("height", 10)
-                .attr("y", function(d,i) { return Math.floor(i / 100) * 20 + 10 })
-                .attr("x", function(d,i) { return i % 100 * 15 })
-                .attr("fill", function(d) { return cScale(d); })
+            // var rects = g.selectAll("rect")
+            //     .data(d3.range(0,1, 0.03))
+            //     .enter()
+            //     .append("rect")
+            //     .attr("width",15)
+            //     .attr("height", 10)
+            //     .attr("y", function(d,i) { return Math.floor(i / 100) * 20 + 10 })
+            //     .attr("x", function(d,i) { return i % 100 * 15 })
+            //     .attr("fill", function(d) { return cScale(d); })
 
         
 

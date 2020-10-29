@@ -100,6 +100,11 @@
 
     }
 
+    .legendQuant text{
+        font-size: 8px;
+        fill:rgb(167, 167, 167);
+    }
+
     .mainview {
         display: flex;
     }
