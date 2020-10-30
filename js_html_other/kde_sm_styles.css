@@ -1,0 +1,87 @@
+
+    #yAxis {
+        display:none;
+    }
+
+    #xAxis path{
+        stroke: rgb(167, 167, 167);
+    }
+
+    #xAxis text {
+            stroke: none;
+            font-size: 9px;
+            fill: rgb(167, 167, 167);
+        }
+
+    #xAxis line {
+          display:None
+        }
+
+    #curves {
+      fill-opacity: 0;
+    }
+
+    h1 {
+        /* text-align: left; */
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        font-size: x-large;
+        font-style: bold;
+        margin-bottom: 20;
+        /* text-align: center; */
+        color: rgb(211, 209, 209);
+    }
+
+    h4 {
+        /* text-align: left; */
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        /* font-size: x-large; */
+        font-style: bold;
+        /* margin-bottom: 20; */
+        /* text-align: center; */
+        color: rgb(211, 209, 209);
+    }
+
+    .descriptionKdeSM {
+      max-width: 520px;
+      text-align: justify;
+      text-anchor: middle;
+      color: rgb(167, 167, 167);
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: small;
+      /* color: rgb(211, 209, 209); */
+    }
+
+    .subtitleKdeSM {
+      margin-top: 0;
+      margin-bottom: 10;
+      display: flex;
+      justify-content: center;
+    }
+
+    .buttons {
+      justify-content: center;
+      display: flex;
+    }
+
+    button {
+      border-color: rgb(88, 88, 88);
+      border-style:solid;
+      border-width: 0.5;
+      /* color: white; */
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      /* display: inline-block; */
+      font-size: 12px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      background-color: rgb(167, 167, 167);
+    }
+
+    button:hover {
+      background-color: #CC4827;
+      color: white;
+    }
+
+    button:focus{
+      font-weight: bold;
+    }

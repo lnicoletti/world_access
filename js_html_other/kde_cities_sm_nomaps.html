@@ -1,0 +1,33 @@
+<meta charset="utf-8">
+<html>
+    <head>
+      <link rel="stylesheet" href="kde_sm_styles.css">
+    </head>
+<body style="background-color: black;">
+<!-- Create a div where the graph will take place -->
+    <h1 style="text-align: center;">Accessibility curves across the world,
+      ranked from  
+      <span style="color: #CC4827">most accessible</span> to
+      <span style="color: #FAAD6A">least accessible.
+  </h1>
+  <div class="subtitleKdeSM">
+  <p class="descriptionKdeSM">Statistical distribution of accessibility for cities around the world. 
+    Each curve represents the probability distribution of accessibility scores for the blocks within a given city.
+    Cities associated with flatter curves have a more <b>unequal</b> distribution of accessibility.</p>
+  </div>
+  <h4 style="text-align: center;">Filter by geographical area</h3>
+  <div class="buttons">
+    <button id="World" type="button">World</button>
+    <button id="North-America" type="button">North America</button>
+    <button id="Europe" type="button">Europe</button>
+    <button id="South-America">Latin America</button>
+    <button id="Oceania">Oceania</button>
+    <button id="Asia">Asia</button>
+    <button id="Africa">Africa</button>
+  </div>
+  <div style="text-align:center;" id="charts"></div>
+</body>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="kde_cities_sm_nomaps.js"></script>
+</html>

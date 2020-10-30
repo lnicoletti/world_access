@@ -1,0 +1,120 @@
+
+    let body = d3.select("#body")
+    Promise.all([
+        d3.json("../data/countries.geojson"),
+        d3.csv("../data/study_cities.csv")]).then(showData)
+    
+    function showData (datasources) {
+        // load two datasets together
+        let mapInfo = datasources[0]
+        let data = datasources[1]
+        data = data.filter(d=>d.city_state !== "London, Canada")
+
+        console.log(mapInfo)
+        console.log(data)
+
+        let bodyHeight = 800
+        let bodyWidth = 1200
+
+        // set projection               
+        let projection = d3.geoNaturalEarth1()
+                           .scale(250)
+                           .translate([bodyWidth/2, bodyHeight/2])
+
+        let path = d3.geoPath()
+                     .projection(projection)
+
+        // draw the chart
+        body.selectAll("path")
+            .data(mapInfo.features)
+            .enter().append("path")
+            .attr("d", d => path(d))
+            .attr("stroke", "black")
+            .attr("stroke-width", "0.7px")
+            .attr("fill", "#363636")
+
+
+        body.append("g")
+            .attr("class", "bubble")
+         .selectAll("circle")
+            .data(data)
+            .enter()
+            .append("circle")
+            // .attr("fill", "#03071e")
+            .attr("r", "4")
+            .attr("cx", d=>projection([+d.lng, +d.lat])[0])
+            .attr("cy", d=>projection([+d.Lng, +d.lat])[1])
+            .attr("fill", d =>  d.study_type === "access" ? "red" :"green")
+            .attr("stroke", "black")
+            .attr("stroke-width", "0.5")
+            .attr("opacity", "0.8")
+        
+        body.append("g")
+            .attr("class", "label")
+         .selectAll("text")
+            .data(data)
+            .enter()
+            .append("text")
+            .attr("x", d=>projection([+d.lng, +d.lat])[0])
+            .attr("y", d=>projection([+d.Lng, +d.lat])[1])
+            .text(d =>  d.city)
+            .attr("font-family", "Arial")
+            .attr("font-size", "5px")
+            .attr("font-weight", "bold")
+            .attr("fill", "rgb(167, 167, 167)")
+            // .attr("transform", "translate(4,2)")
+            .attr("transform", d => d.city === "Ottawa" ? "translate(-5,1)" :"translate(4,1)")
+            .attr("text-anchor", d => d.city === "Ottawa" ? "end" :"start")
+            // .attr("transform.am", d => d.city === "Amsterdam" ? "translate(4,-10)" :"translate(0,0)")
+            // .on("mouseover", function() { d3.select(this).attr("stroke", "#000").raise(); })
+            // .on("mouseout", function() { d3.select(this).attr("stroke", null).lower(); })
+            // .on("mouseenter", d => {
+            //     // show text and get x and y positon of mouse
+            //     showTooltip2(d.county + ": " + d.death_count + " Fatal Encounters With Police", [d3.event.clientX, d3.event.clientY])
+            // })
+            // .on("mousemove", d => {
+            //     // do the same thing on mousemove so that it follows the mouse
+            //     showTooltip2(d.county + ": " + d.death_count + " Fatal Encounters With Police", [d3.event.clientX, d3.event.clientY])
+            // })
+            // .on("mouseleave", d => {
+            //     d3.select("#tooltipMap").style("display", "none")
+            // })
+
+        // Legend
+        body.append("g")
+            .attr("class", "legend")
+            .append("circle")
+            .attr("r", "4")
+            .attr("cx", "50")
+            .attr("cy", "560")
+            .attr("fill", "red")
+            .attr("stroke", "black")
+            .attr("stroke-width", "0.5")
+            .attr("opacity", "0.8")
+        body.append("text")
+            .attr("x", "53")
+            .attr("y", "560")
+            .text("Accessibility Study")
+            .attr("font-family", "Arial")
+            .attr("font-size", "10px")
+            .attr("fill", "rgb(167, 167, 167)")
+            .attr("transform", "translate(5, 2)")
+
+        body.append("circle")
+            .attr("class", "legend")
+            .attr("r", "4")
+            .attr("cx", "50")
+            .attr("cy", "580")
+            .attr("fill", "green")
+            .attr("stroke", "black")
+            .attr("stroke-width", "0.5")
+            .attr("opacity", "0.8")
+        body.append("text")
+            .attr("x", "53")
+            .attr("y", "580")
+            .text("Accessibility + Equality Study")
+            .attr("font-family", "Arial")
+            .attr("font-size", "10px")
+            .attr("fill", "rgb(167, 167, 167)")
+            .attr("transform", "translate(5, 2)")
+    }
