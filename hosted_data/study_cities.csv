@@ -1,0 +1,55 @@
+,city,city_ascii,lat,lng,country,iso2,iso3,admin_name,capital,population,id,city_state,study_type
+0,Tokyo,Tokyo,35.685,139.7514,Japan,JP,JPN,Tōkyō,primary,35676000.0,1392685764,"Tokyo, Japan",access
+2,Mexico City,Mexico City,19.4424,-99.131,Mexico,MX,MEX,Ciudad de México,primary,19028000.0,1484247881,"Mexico City, Mexico",access
+6,Shanghai,Shanghai,31.2165,121.4365,China,CN,CHN,Shanghai,admin,14987000.0,1156073548,"Shanghai, China",access
+10,Buenos Aires,Buenos Aires,-34.6025,-58.3975,Argentina,AR,ARG,"Buenos Aires, Ciudad Autónoma de",primary,12795000.0,1032717330,"Buenos Aires, Argentina",access
+13,Rio de Janeiro,Rio de Janeiro,-22.925,-43.225,Brazil,BR,BRA,Rio de Janeiro,admin,11748000.0,1076887657,"Rio de Janeiro, Brazil",access
+15,Beijing,Beijing,39.9289,116.3883,China,CN,CHN,Beijing,primary,11106000.0,1156228865,"Beijing, China",access
+17,Moscow,Moscow,55.7522,37.6155,Russia,RU,RUS,Moskva,primary,10452000.0,1643318494,"Moscow, Russia",access
+18,Istanbul,Istanbul,41.105,29.01,Turkey,TR,TUR,İstanbul,admin,10061000.0,1792756324,"Istanbul, Turkey",access
+19,Paris,Paris,48.8667,2.3333,France,FR,FRA,Île-de-France,primary,9904000.0,1250015082,"Paris, France",access
+20,Seoul,Seoul,37.5663,126.9997,"Korea, South",KR,KOR,Seoul,primary,9796000.0,1410836482,"Seoul, Korea, South",access
+22,Jakarta,Jakarta,-6.1744,106.8294,Indonesia,ID,IDN,Jakarta,primary,9125000.0,1360771077,"Jakarta, Indonesia",access
+25,London,London,51.5,-0.1167,United Kingdom,GB,GBR,"London, City of",primary,8567000.0,1826645935,"London, United Kingdom",access
+26,Lima,Lima,-12.048,-77.0501,Peru,PE,PER,Lima,primary,8012000.0,1604728603,"Lima, Peru",access
+29,Bogotá,Bogota,4.5964,-74.0833,Colombia,CO,COL,Bogotá,primary,7772000.0,1170483426,"Bogota, Colombia",access
+35,Taipei,Taipei,25.0358,121.5683,Taiwan,TW,TWN,Taipei,primary,6900273.0,1158881289,"Taipei, Taiwan",access
+37,Bangkok,Bangkok,13.75,100.5166,Thailand,TH,THA,Krung Thep Maha Nakhon,primary,6704000.0,1764068610,"Bangkok, Thailand",access
+43,Santiago,Santiago,-33.45,-70.667,Chile,CL,CHL,Región Metropolitana,primary,5720000.0,1152554349,"Santiago, Chile",access
+46,Madrid,Madrid,40.4,-3.6834,Spain,ES,ESP,Madrid,primary,5567000.0,1724616994,"Madrid, Spain",access
+53,Singapore,Singapore,1.293,103.8558,Singapore,SG,SGP,,primary,5183700.0,1702341327,"Singapore, Singapore",access
+56,Barcelona,Barcelona,41.3833,2.1834,Spain,ES,ESP,Catalonia,admin,4920000.0,1724594040,"Barcelona, Spain",access
+62,Sydney,Sydney,-33.92,151.1852,Australia,AU,AUS,New South Wales,admin,4630000.0,1036074917,"Sydney, Australia",access
+69,Melbourne,Melbourne,-37.82,144.975,Australia,AU,AUS,Victoria,admin,4170000.0,1036533631,"Melbourne, Australia",access
+96,Berlin,Berlin,52.5218,13.4015,Germany,DE,DEU,Berlin,primary,3406000.0,1276451290,"Berlin, Germany",access
+98,Rome,Rome,41.896,12.4833,Italy,IT,ITA,Lazio,primary,3339000.0,1380382862,"Rome, Italy",access
+102,Athens,Athens,37.9833,23.7333,Greece,GR,GRC,Attikí,primary,3242000.0,1300715560,"Athens, Greece",access
+104,Cape Town,Cape Town,-33.92,18.435,South Africa,ZA,ZAF,Western Cape,primary,3215000.0,1710680650,"Cape Town, South Africa",access
+116,Nairobi,Nairobi,-1.2833,36.8167,Kenya,KE,KEN,Nairobi City,primary,3010000.0,1404000661,"Nairobi, Kenya",access
+120,Milan,Milan,45.47,9.205,Italy,IT,ITA,Lombardy,admin,2945000.0,1380724377,"Milan, Italy",access
+130,Lisbon,Lisbon,38.7227,-9.1449,Portugal,PT,PRT,Lisboa,primary,2812000.0,1620619017,"Lisbon, Portugal",access
+254,Warsaw,Warsaw,52.25,21.0,Poland,PL,POL,Mazowieckie,primary,1707000.0,1616024847,"Warsaw, Poland",access
+263,Budapest,Budapest,47.5,19.0833,Hungary,HU,HUN,Budapest,primary,1679000.0,1348611435,"Budapest, Hungary",access
+291,Santiago,Santiago,19.5,-70.67,Dominican Republic,DO,DOM,Cibao Norte,admin,1550753.0,1214985348,"Santiago, Dominican Republic",access
+350,Auckland,Auckland,-36.8481,174.763,New Zealand,NZ,NZL,Auckland,admin,1377200.0,1554435911,"Auckland, New Zealand",access
+381,Stockholm,Stockholm,59.3508,18.0973,Sweden,SE,SWE,Stockholm,primary,1264000.0,1752425602,"Stockholm, Sweden",access
+434,Zürich,Zurich,47.38,8.55,Switzerland,CH,CHE,Zürich,admin,1108000.0,1756539143,"Zurich, Switzerland",access
+451,Copenhagen,Copenhagen,55.6786,12.5635,Denmark,DK,DNK,Hovedstaden,primary,1085000.0,1208763942,"Copenhagen, Denmark",access
+463,Dublin,Dublin,53.3331,-6.2489,Ireland,IE,IRL,Dublin,primary,1059000.0,1372595407,"Dublin, Ireland",access
+475,Amsterdam,Amsterdam,52.35,4.9166,Netherlands,NL,NLD,Noord-Holland,primary,1031000.0,1528355309,"Amsterdam, Netherlands",access
+915,Barcelona,Barcelona,10.1304,-64.72,Venezuela,VE,VEN,Anzoátegui,admin,600954.0,1862418619,"Barcelona, Venezuela",access
+1036,Edinburgh,Edinburgh,55.9483,-3.2191,United Kingdom,GB,GBR,"Edinburgh, City of",admin,504966.0,1826492520,"Edinburgh, United Kingdom",access
+1388,London,London,42.97,-81.25,Canada,CA,CAN,Ontario,,346765.0,1124469960,"London, Canada",equity
+8381,Sydney,Sydney,46.0661,-60.18,Canada,CA,CAN,Nova Scotia,,37538.0,1124205375,"Sydney, Canada",equity
+8,Los Angeles,Los Angeles,34.1139,-118.4068,United States,US,USA,California,,12815475.0,1840020491,"Los Angeles, United States",equity
+24,Chicago,Chicago,41.8373,-87.6862,United States,US,USA,Illinois,,8675982.0,1840000494,"Chicago, United States",equity
+40,Miami,Miami,25.7839,-80.2102,United States,US,USA,Florida,,6381966.0,1840015149,"Miami, United States",equity
+44,Philadelphia,Philadelphia,40.0077,-75.1339,United States,US,USA,Pennsylvania,,5637884.0,1840000673,"Philadelphia, United States",equity
+47,Houston,Houston,29.7869,-95.3905,United States,US,USA,Texas,,5446468.0,1840020925,"Houston, United States",equity
+52,Toronto,Toronto,43.7,-79.42,Canada,CA,CAN,Ontario,admin,5213000.0,1124279679,"Toronto, Canada",equity
+84,Montréal,Montreal,45.5,-73.5833,Canada,CA,CAN,Québec,,3678000.0,1124586170,"Montreal, Canada",equity
+87,Seattle,Seattle,47.6211,-122.3244,United States,US,USA,Washington,,3643765.0,1840021117,"Seattle, United States",equity
+89,San Francisco,San Francisco,37.7562,-122.443,United States,US,USA,California,,3603761.0,1840021543,"San Francisco, United States",equity
+176,Vancouver,Vancouver,49.2734,-123.1216,Canada,CA,CAN,British Columbia,,2313328.0,1124825478,"Vancouver, Canada",equity
+414,Ottawa,Ottawa,45.4167,-75.7,Canada,CA,CAN,Ontario,primary,1145000.0,1124399363,"Ottawa, Canada",equity
+2302,Vancouver,Vancouver,45.6367,-122.597,United States,US,USA,Washington,,175673.0,1840021189,"Vancouver, United States",equity
