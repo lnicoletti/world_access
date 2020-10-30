@@ -1,8 +1,8 @@
 
     let body = d3.select("#body")
     Promise.all([
-        d3.json("../data/countries.geojson"),
-        d3.csv("../data/study_cities.csv")]).then(showData)
+        d3.json("https://cdn.jsdelivr.net/gh/lnicoletti/world_access@master/hosted_data/countries.geojson"),
+        d3.csv("https://cdn.jsdelivr.net/gh/lnicoletti/world_access@master/hosted_data/study_cities.csv")]).then(showData)
     
     function showData (datasources) {
         // load two datasets together

@@ -3,7 +3,8 @@
         width = 210 - margin.left - margin.right,
         height = 210 - margin.top - margin.bottom;
     
-    d3.json("../data/cities_final.json").then((data) => {
+    // d3.json("../data/cities_final.json").then((data) => {
+      d3.json("https://cdn.jsdelivr.net/gh/lnicoletti/world_access@master/hosted_data/cities_final.json").then((data) => {
         console.log(data)
         showData(data.features)
 
