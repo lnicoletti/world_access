@@ -5,12 +5,14 @@
 
     #xAxis path{
         stroke: rgb(167, 167, 167);
+        stroke-width: 0.5;
     }
 
     #xAxis text {
             stroke: none;
             font-size: 9px;
-            fill: rgb(167, 167, 167);
+            /* fill: rgb(167, 167, 167); */
+            
         }
 
     #xAxis line {

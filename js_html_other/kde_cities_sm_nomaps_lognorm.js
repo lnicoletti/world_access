@@ -4,11 +4,17 @@
         height = 210 - margin.top - margin.bottom;
     
     // d3.json("../data/cities_final.json").then((data) => {
-      d3.json("../data/cities_final.json").then((data) => {
+      d3.csv("https://gist.githubusercontent.com/lnicoletti/4ac01feb54fae97b5bc86a57b177f3d5/raw/e959534856f4cc679f972fa2893d1062d502fa85/cities_scaling3.csv").then((data) => {
 
       // d3.json("https://cdn.jsdelivr.net/gh/lnicoletti/world_access@master/hosted_data/cities_final.json").then((data) => {
         console.log(data)
-        showData(data.features)
+        // showData(data)
+        showData(data.filter(d=>(d.city === "Vancouver")|(d.city === "Montreal")|
+        (d.city === "Toronto")|(d.city === "Chicago")|
+        (d.city === "New York City")|(d.city === "Los Angeles")|
+        (d.city === "Seattle")|(d.city === "Philadelphia")|
+        (d.city === "Miami")|(d.city === "San Francisco")|(d.city === "Houston")))
+
 
         console.log(d3.select("#South-America").html())
         
@@ -29,7 +35,7 @@
   function showData(data) {
       // Filter city of interest
       var cities = d3.nest()
-          .key(function(d) { return d.properties.city; })
+          .key(function(d) { return d.city; })
           .entries(data);
     
       console.log(cities)
@@ -76,7 +82,7 @@
             .y(function(d) { return y(d[1]); });
 
       cScale = d3.scaleSequential(d3.interpolateOranges)
-                  .domain([0.4, 1.1]);
+                  .domain([0.2, 0.7]);
       console.log(d3.interpolateOranges)
       // Compute kernel density estimation
       var kde = kernelDensityEstimator(kernelEpanechnikov(0.007), x.ticks(30))
@@ -89,9 +95,9 @@
 
     density = cities.map(function(d) {return {
         key: d.key,
-        accessibil_sc: d.values.map(d=>d.properties.accessibil_sc),
-        accessibil_median: d3.median(d.values.map(d=>d.properties.accessibil_sc)),
-        values: kde(d.values.map(d=>d.properties.accessibil_sc))}})
+        a_log: d.values.map(d=>d.a_log),
+        accessibil_median: d3.median(d.values.map(d=>d.a_log)),
+        values: kde(d.values.map(d=>d.a_log))}})
     
     // density.sort(function(x, y){
     //     // return d3.ascending(x.MV - x.LV, y.MV - y.LV);
@@ -109,8 +115,19 @@
           .data(density)
           .attr("fill", "white")
           .attr("opacity", "0.8")
-          .attr("stroke", d=>cScale(+d.accessibil_median))
-          .attr("stroke-width", 2)
+          // .attr("stroke", d=>cScale(+d.accessibil_median))
+          .attr("stroke", d=>(d.key === "Vancouver")?"orange":
+          (d.key === "Montreal")?"black":
+          (d.key === "Toronto")?"":
+          (d.key === "Chicago")?"purple":
+          (d.key === "New York City")?"#0cc795":
+          (d.key === "Los Angeles")?"red":
+          (d.key === "Seattle")?"steelblue":
+          (d.key === "Philadelphia")?"lightblue":
+          (d.key === "Miami")?"green":
+          (d.key === "San Francisco")?"brown":
+          (d.key === "Houston")?"grey":'lightgrey')
+          .attr("stroke-width", 2.5)
           .attr("stroke-linejoin", "round")
           .attr("d", function(d) {return line(d.values); })
           
@@ -127,7 +144,18 @@
         // .style("font-size", "12px")
         .style("font", "18px Georgia")
         // .attr("fill", "#ff6d00")
-        .attr("fill", d=>cScale(+d.accessibil_median))
+        // .attr("fill", d=>cScale(+d.accessibil_median))
+        .attr("fill", d=>(d.key === "Vancouver")?"orange":
+        (d.key === "Montreal")?"black":
+        (d.key === "Toronto")?"":
+        (d.key === "Chicago")?"purple":
+        (d.key === "New York City")?"#0cc795":
+        (d.key === "Los Angeles")?"red":
+        (d.key === "Seattle")?"steelblue":
+        (d.key === "Philadelphia")?"lightblue":
+        (d.key === "Miami")?"green":
+        (d.key === "San Francisco")?"brown":
+        (d.key === "Houston")?"grey":'lightgrey')
         // .attr("fill", function (d) { return myColor(d.values[0].party); })
             .text(function(d) { return d.key; });	
 
@@ -141,10 +169,12 @@
         .style("font", "10px Arial")
         // .attr("fill", function (d) { return myColor(d.values[0].party); })
         .text("Median Accessibility: ")
-        .attr("fill", "rgb(167, 167, 167)")
+        // .attr("fill", "rgb(167, 167, 167)")
+        .attr("fill", "black")
         .append("tspan")
         .attr("font-weight", "bold")
-        .attr("fill", "rgb(167, 167, 167)")
+        // .attr("fill", "rgb(167, 167, 167)")
+        .attr("fill", "black")
         .text(d=>Math.round(+d.accessibil_median*100)/100);
 
       // median line
@@ -152,7 +182,8 @@
         .data(density)
         .attr("x1", d=>x(+d.accessibil_median))
         .attr("x2", d=>x(+d.accessibil_median))
-        .attr("y1", 50)
+        // .attr("y1", 50)
+        .attr("y1", 80)
         .attr("y2", 126)
         // .attr("d", function(d) {return line((+d.accessibil_median, +d.accessibil_median)); })
         .attr("stroke", "grey")
@@ -167,7 +198,7 @@
           .append("text")
           .text("Median accessibility")
           .attr("x", d=>x(+d.accessibil_median))
-          .attr("y", 68)
+          .attr("y", 110)
           .style("font-family", "arial")
           .style("font-size", "10")
           .attr("text-anchor", "middle")
